@@ -467,80 +467,83 @@ body[data-cr=cut] #page {
   word-wrap: break-word;
 }
 #ed:empty::before { content: attr(data-ph); color: var(--dim); }
-#ed h1, #ed h2, #ed h3 {
+:is(#ed, #pip-ed, .pocket-pip-editor) h1, :is(#ed, #pip-ed, .pocket-pip-editor) h2, :is(#ed, #pip-ed, .pocket-pip-editor) h3 {
   font-family: var(--hf);
   font-weight: 800;
   line-height: 1.25;
   color: var(--accent);
   margin: 1.2em 0 .4em;
 }
-#ed h1 { font-size: calc(2em * var(--hsc)); }
-#ed h2 { font-size: calc(1.55em * var(--hsc)); }
-#ed h3 { font-size: calc(1.25em * var(--hsc)); }
-body[data-hc=upper] #ed :is(h1, h2, h3) { text-transform: uppercase; letter-spacing: .04em; }
-body[data-hs=plain] #ed h2 { border-bottom: 1px solid var(--line); padding-bottom: 4px; }
-body[data-hs=bracket] #ed :is(h1, h2, h3) { border-left: 7px solid var(--accent); padding-left: 12px; }
-body[data-hs=block] #ed :is(h1, h2, h3) {
+:is(#ed, #pip-ed, .pocket-pip-editor) h1 { font-size: calc(2em * var(--hsc)); }
+:is(#ed, #pip-ed, .pocket-pip-editor) h2 { font-size: calc(1.55em * var(--hsc)); }
+:is(#ed, #pip-ed, .pocket-pip-editor) h3 { font-size: calc(1.25em * var(--hsc)); }
+body[data-hc=upper] :is(#ed, #pip-ed, .pocket-pip-editor) :is(h1, h2, h3) { text-transform: uppercase; letter-spacing: .04em; }
+body[data-hs=plain] :is(#ed, #pip-ed, .pocket-pip-editor) h2 { border-bottom: 1px solid var(--line); padding-bottom: 4px; }
+body[data-hs=bracket] :is(#ed, #pip-ed, .pocket-pip-editor) :is(h1, h2, h3) { border-left: 7px solid var(--accent); padding-left: 12px; }
+body[data-hs=block] :is(#ed, #pip-ed, .pocket-pip-editor) :is(h1, h2, h3) {
   display: table;
   background: var(--accent);
   color: var(--onacc);
   padding: 2px 22px 2px 12px;
   clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
 }
-body[data-hs=slash] #ed :is(h1, h2, h3)::before { content: "//"; margin-right: .4em; opacity: .7; }
-body[data-hs=hazard] #ed :is(h1, h2, h3) {
+body[data-hs=slash] :is(#ed, #pip-ed, .pocket-pip-editor) :is(h1, h2, h3)::before { content: "//"; margin-right: .4em; opacity: .7; }
+body[data-hs=hazard] :is(#ed, #pip-ed, .pocket-pip-editor) :is(h1, h2, h3) {
   padding-bottom: 10px;
   background: repeating-linear-gradient(-45deg, var(--accent) 0 6px, transparent 6px 12px) left bottom/100% 5px no-repeat;
 }
-body[data-hs=boxed] #ed :is(h1, h2, h3) {
+body[data-hs=boxed] :is(#ed, #pip-ed, .pocket-pip-editor) :is(h1, h2, h3) {
   display: table;
   border: 2px solid var(--accent);
   padding: 2px 14px;
   box-shadow: 5px 5px 0 var(--accent);
 }
-#ed p { margin: .5em 0; }
-#ed blockquote {
+:is(#ed, #pip-ed, .pocket-pip-editor) p { margin: .5em 0; }
+:is(#ed, #pip-ed, .pocket-pip-editor) blockquote {
   margin: 14px 0;
   padding: 6px 16px;
   border-left: 5px solid var(--accent);
   background: color-mix(in srgb, var(--accent) 8%, transparent);
 }
-#ed pre {
-  margin: 14px 0;
-  padding: 12px 16px;
+:is(#ed, #pip-ed, .pocket-pip-editor) pre {
+  margin: 12px 0;
+  padding: 10px 14px;
   background: #050507;
   color: var(--accent2);
   border: 1px solid var(--line);
   border-left: 4px solid var(--accent2);
-  font: 14px/1.55 var(--mono);
+  font: 13.5px/1.55 var(--mono);
   overflow-x: auto;
+  tab-size: 2;
+  white-space: pre-wrap;
+  word-break: break-all;
 }
-#ed code {
+:is(#ed, #pip-ed, .pocket-pip-editor) code {
   font-family: var(--mono);
   background: color-mix(in srgb, var(--accent) 12%, transparent);
   padding: 1px 5px;
   font-size: .9em;
 }
-#ed pre code { background: none; padding: 0; color: inherit; }
-#ed a { color: var(--accent2); text-decoration: underline; text-underline-offset: 3px; }
-#ed hr { border: 0; border-top: 2px dashed var(--accent); margin: 18px 0; }
-#ed img { max-width: 100%; }
-#ed table { border-collapse: collapse; width: 100%; margin: 12px 0; }
-#ed td, #ed th { border: 1px solid var(--line); padding: 8px 10px; min-width: 60px; }
-#ed th { background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--accent); text-align: left; }
-#ed .box {
+:is(#ed, #pip-ed, .pocket-pip-editor) pre code { background: none; padding: 0; color: inherit; }
+:is(#ed, #pip-ed, .pocket-pip-editor) a { color: var(--accent2); text-decoration: underline; text-underline-offset: 3px; }
+:is(#ed, #pip-ed, .pocket-pip-editor) hr { border: 0; border-top: 2px dashed var(--accent); margin: 18px 0; }
+:is(#ed, #pip-ed, .pocket-pip-editor) img { max-width: 100%; }
+:is(#ed, #pip-ed, .pocket-pip-editor) table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+:is(#ed, #pip-ed, .pocket-pip-editor) td, :is(#ed, #pip-ed, .pocket-pip-editor) th { border: 1px solid var(--line); padding: 8px 10px; min-width: 60px; }
+:is(#ed, #pip-ed, .pocket-pip-editor) th { background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--accent); text-align: left; }
+:is(#ed, #pip-ed, .pocket-pip-editor) .box {
   margin: 16px 0;
   padding: 10px 22px;
   border-left: 6px solid var(--accent);
   background: color-mix(in srgb, var(--accent) 10%, transparent);
   clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%);
 }
-#ed .box.warn {
+:is(#ed, #pip-ed, .pocket-pip-editor) .box.warn {
   border-left-color: var(--danger);
   background: color-mix(in srgb, var(--danger) 12%, transparent);
 }
-#ed ul.todo { list-style: none; padding-left: 4px; }
-#ed .todo input { accent-color: var(--accent); margin-right: 8px; transform: scale(1.25); cursor: pointer; }
+:is(#ed, #pip-ed, .pocket-pip-editor) ul.todo { list-style: none; padding-left: 4px; }
+:is(#ed, #pip-ed, .pocket-pip-editor) .todo input { accent-color: var(--accent); margin-right: 8px; transform: scale(1.25); cursor: pointer; }
 
 .shp { display: inline-block; vertical-align: middle; margin: 4px 6px; cursor: pointer; line-height: 0; user-select: none; }
 .shp svg { width: 100%; height: auto; display: block; }
@@ -1025,6 +1028,9 @@ body.pocket-mode #st {
 body.pocket-mode #top-note-sel {
   display: inline-block !important;
 }
+body.pocket-mode #top-new-btn {
+  display: inline-block !important;
+}
 body.pocket-mode #crumb {
   display: none !important;
 }
@@ -1299,6 +1305,7 @@ body[data-cr=cut] #pip-banner {
       <button id="sbt" aria-label="Toggle sidebar" title="Toggle Sidebar">☰</button>
       <span id="crumb"></span>
       <select id="top-note-sel" aria-label="Select active directive" title="Quick Switch Directive"></select>
+      <button id="top-new-btn" class="sec" title="Create New Directive in Pocket Mode" style="display:none;padding:2px 7px;font-size:11px;font-weight:700">+ NEW</button>
       <button id="pocket-btn" class="pocket-btn" title="Launch Pocket Mode (Always on Top PiP or Pop-out) [Alt+P]">
         <span class="pulse-dot"></span>
         <span>📌 POCKET</span>
@@ -1821,10 +1828,221 @@ function crumb() {
   $('#crumb').innerHTML = n ? path(n).map((x, i, a) => i == a.length - 1 ? '<b>' + esc(x) + '</b>' : esc(x)).join(' // ') : 'CENTRAL DOGMA // STANDBY';
   $('#ptitle').textContent = n ? n.name : '';
 }
+let syncChannel = null;
+try {
+  if ('BroadcastChannel' in window) {
+    syncChannel = new BroadcastChannel('casper-sync-v1');
+    syncChannel.onmessage = ev => {
+      const msg = ev.data;
+      if (!msg) return;
+      if (msg.type === 'note-content') {
+        const curNote = note();
+        if (curNote && curNote.id === msg.id) {
+          curNote.html = msg.html;
+          curNote.name = msg.name;
+          if (document.activeElement !== ed && ed.innerHTML !== msg.html) {
+            ed.innerHTML = msg.html || '';
+          }
+          if (document.activeElement !== ti && ti.value !== msg.name) {
+            ti.value = msg.name || '';
+          }
+          stats();
+          crumb();
+          updateTopNoteSelector();
+          updatePipIfOpen();
+        } else {
+          const itm = it(msg.id);
+          if (itm) {
+            itm.html = msg.html;
+            itm.name = msg.name;
+            updateTopNoteSelector();
+          }
+        }
+      } else if (msg.type === 'items-changed') {
+        items = msg.items || items;
+        tree();
+        updateTopNoteSelector();
+        if (msg.cur && msg.cur !== cur && !it(cur)) {
+          cur = msg.cur;
+          openNote();
+        }
+        updatePipIfOpen();
+      }
+    };
+  }
+} catch (e) {}
+
+function formatOrInsertCode(targetEd, targetWin, savedRange) {
+  if (!targetEd) return;
+  targetWin = targetWin || window;
+  targetEd.focus();
+
+  const sel = targetWin.getSelection();
+  if (savedRange && sel) {
+    try {
+      sel.removeAllRanges();
+      sel.addRange(savedRange);
+    } catch (e) {}
+  }
+
+  // Check if currently inside <pre>
+  let node = sel && sel.anchorNode;
+  let preEl = null;
+  while (node && node !== targetEd) {
+    if (node.nodeName === 'PRE') { preEl = node; break; }
+    node = node.parentNode;
+  }
+
+  if (preEl) {
+    // Toggle off: convert <pre> back to <p>
+    const p = targetWin.document.createElement('p');
+    p.textContent = preEl.textContent || '';
+    if (!p.textContent.trim()) p.innerHTML = '<br>';
+    preEl.replaceWith(p);
+
+    const r = targetWin.document.createRange();
+    r.selectNodeContents(p);
+    r.collapse(false);
+    sel.removeAllRanges();
+    sel.addRange(r);
+
+    targetEd.dispatchEvent(new Event('input', { bubbles: true }));
+    return;
+  }
+
+  // If text is selected, wrap in <pre><code>...</code></pre>
+  if (sel && !sel.isCollapsed && sel.toString().length > 0) {
+    const selectedText = sel.toString();
+    const pre = targetWin.document.createElement('pre');
+    const code = targetWin.document.createElement('code');
+    code.textContent = selectedText;
+    pre.appendChild(code);
+
+    const range = sel.getRangeAt(0);
+    range.deleteContents();
+    range.insertNode(pre);
+
+    if (!pre.nextElementSibling) {
+      const p = targetWin.document.createElement('p');
+      p.innerHTML = '<br>';
+      pre.after(p);
+    }
+
+    const r = targetWin.document.createRange();
+    r.selectNodeContents(code);
+    sel.removeAllRanges();
+    sel.addRange(r);
+  } else {
+    // Collapsed cursor: check if on an existing paragraph with content
+    let block = sel && sel.anchorNode;
+    while (block && block.parentNode !== targetEd && block !== targetEd) {
+      block = block.parentNode;
+    }
+
+    const pre = targetWin.document.createElement('pre');
+    const code = targetWin.document.createElement('code');
+
+    if (block && block !== targetEd && block.textContent.trim().length > 0) {
+      code.textContent = block.textContent;
+      pre.appendChild(code);
+      block.replaceWith(pre);
+    } else {
+      code.textContent = '// Directive Code Snippet\n';
+      pre.appendChild(code);
+      if (block && block !== targetEd) {
+        block.replaceWith(pre);
+      } else {
+        targetEd.appendChild(pre);
+      }
+    }
+
+    if (!pre.nextElementSibling) {
+      const p = targetWin.document.createElement('p');
+      p.innerHTML = '<br>';
+      pre.after(p);
+    }
+
+    const r = targetWin.document.createRange();
+    r.selectNodeContents(code);
+    r.collapse(false);
+    sel.removeAllRanges();
+    sel.addRange(r);
+  }
+
+  targetEd.dispatchEvent(new Event('input', { bubbles: true }));
+}
+
+function handleCodeBlockKeydown(e, targetEd, targetWin) {
+  targetWin = targetWin || window;
+  const sel = targetWin.getSelection();
+  if (!sel || !sel.rangeCount) return false;
+
+  let node = sel.anchorNode;
+  let pre = null;
+  while (node && node !== targetEd) {
+    if (node.nodeName === 'PRE') { pre = node; break; }
+    node = node.parentNode;
+  }
+  if (!pre) return false;
+
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    if (e.shiftKey) {
+      targetWin.document.execCommand('outdent', false, null);
+    } else {
+      targetWin.document.execCommand('insertText', false, '  ');
+    }
+    targetEd.dispatchEvent(new Event('input', { bubbles: true }));
+    return true;
+  }
+
+  if (e.key === 'Enter' && !e.ctrlKey && !e.metaKey) {
+    e.preventDefault();
+    const codeText = pre.textContent || '';
+    const atEnd = sel.isCollapsed && sel.anchorOffset === (sel.anchorNode ? sel.anchorNode.length : 0);
+
+    if (atEnd && codeText.endsWith('\n')) {
+      pre.textContent = codeText.slice(0, -1);
+      const p = targetWin.document.createElement('p');
+      p.innerHTML = '<br>';
+      pre.after(p);
+      const r = targetWin.document.createRange();
+      r.selectNodeContents(p);
+      r.collapse(true);
+      sel.removeAllRanges();
+      sel.addRange(r);
+    } else {
+      targetWin.document.execCommand('insertText', false, '\n');
+    }
+    targetEd.dispatchEvent(new Event('input', { bubbles: true }));
+    return true;
+  }
+
+  if (e.key === 'Backspace' && sel.isCollapsed) {
+    const text = (pre.textContent || '').trim();
+    if (!text) {
+      e.preventDefault();
+      const p = targetWin.document.createElement('p');
+      p.innerHTML = '<br>';
+      pre.replaceWith(p);
+      const r = targetWin.document.createRange();
+      r.selectNodeContents(p);
+      r.collapse(true);
+      sel.removeAllRanges();
+      sel.addRange(r);
+      targetEd.dispatchEvent(new Event('input', { bubbles: true }));
+      return true;
+    }
+  }
+
+  return false;
+}
+
 function openNote() {
   const n = note();
-  $('#page').hidden = !n;
-  $('#empty').hidden = !!n;
+  $('#page').hidden = !n || !!pipWin;
+  $('#empty').hidden = !!n || !!pipWin;
+  $('#pip-banner').hidden = !pipWin;
   selShape = null; shg();
   if (n) {
     ti.value = n.name;
@@ -1840,12 +2058,15 @@ function sync() {
   if (['<br>', '<p><br></p>', '<div><br></div>'].includes(ed.innerHTML)) ed.innerHTML = '';
   const n = note();
   if (n) {
-    // Convert [[WikiLinks]] typed inline into links on the fly if needed
     n.html = html();
     save();
     diskQ(n);
+    if (syncChannel) {
+      try { syncChannel.postMessage({ type: 'note-content', id: n.id, html: n.html, name: n.name }); } catch (e) {}
+    }
   }
   stats();
+  updatePipIfOpen();
 }
 ed.addEventListener('input', sync);
 ed.addEventListener('change', e => {
@@ -1854,6 +2075,16 @@ ed.addEventListener('change', e => {
 function handlePaste(e) {
   const cd = e.clipboardData || (e.originalEvent && e.originalEvent.clipboardData);
   if (!cd) return;
+
+  const targetEd = e.currentTarget || (pipWin && pipWin.document && pipWin.document.contains(e.target) ? pipWin.document.querySelector('#pip-ed') : ed);
+  const targetWin = targetEd && targetEd.ownerDocument ? targetEd.ownerDocument.defaultView : window;
+  const targetDoc = targetWin.document;
+
+  const insertHtmlAtTarget = htmlStr => {
+    targetEd.focus();
+    targetDoc.execCommand('insertHTML', false, htmlStr);
+    targetEd.dispatchEvent(new Event('input', { bubbles: true }));
+  };
 
   if (cd.items) {
     for (const item of cd.items) {
@@ -1864,7 +2095,7 @@ function handlePaste(e) {
           const reader = new FileReader();
           reader.onload = evt => {
             const imgTag = `<p><img src="${evt.target.result}" style="max-width:100%;border:1px solid var(--accent);box-shadow:4px 4px 0 var(--accent);margin:10px 0;display:block" alt="Tactical screenshot"></p><p><br></p>`;
-            ins(imgTag);
+            insertHtmlAtTarget(imgTag);
           };
           reader.readAsDataURL(file);
           return;
@@ -1877,23 +2108,52 @@ function handlePaste(e) {
   if (text) {
     e.preventDefault();
     if (/^https?:\/\/[^\s]+$/.test(text.trim())) {
-      ins(`<a href="${esc(text.trim())}" target="_blank" rel="noopener">${esc(text.trim())}</a>&nbsp;`);
+      insertHtmlAtTarget(`<a href="${esc(text.trim())}" target="_blank" rel="noopener">${esc(text.trim())}</a>&nbsp;`);
     } else {
-      document.execCommand('insertText', false, text);
+      targetEd.focus();
+      targetDoc.execCommand('insertText', false, text);
+      targetEd.dispatchEvent(new Event('input', { bubbles: true }));
     }
-    sync();
   }
 }
 ed.addEventListener('paste', handlePaste);
 ti.oninput = () => {
   const n = note();
-  if (n) { n.name = ti.value; save(); tree(); crumb(); }
+  if (n) {
+    n.name = ti.value;
+    save();
+    tree();
+    crumb();
+    updateTopNoteSelector();
+    updatePipIfOpen();
+    if (syncChannel) {
+      try { syncChannel.postMessage({ type: 'note-content', id: n.id, html: n.html, name: n.name }); } catch (e) {}
+    }
+  }
 };
 ti.onkeydown = e => { if (e.key == 'Enter') { e.preventDefault(); ed.focus(); } };
 $('#pinb').onclick = () => {
   const n = note();
-  if (n) { n.pinned = !n.pinned; $('#pinb').classList.toggle('on', !!n.pinned); save(); tree(); }
+  if (n) {
+    n.pinned = !n.pinned;
+    $('#pinb').classList.toggle('on', !!n.pinned);
+    save();
+    tree();
+    updatePipIfOpen();
+    if (syncChannel) {
+      try { syncChannel.postMessage({ type: 'items-changed', items, cur }); } catch (e) {}
+    }
+  }
 };
+
+const topNewBtn = $('#top-new-btn');
+if (topNewBtn) {
+  topNewBtn.onclick = () => {
+    add('note', target());
+    ti.focus();
+    ti.select();
+  };
+}
 
 document.execCommand('defaultParagraphSeparator', false, 'p');
 document.addEventListener('selectionchange', () => {
@@ -1901,16 +2161,59 @@ document.addEventListener('selectionchange', () => {
   if (s.rangeCount && ed.contains(s.anchorNode)) {
     saved = s.getRangeAt(0).cloneRange();
     try {
-      const v = (document.queryCommandValue('formatBlock') || 'p').toLowerCase().replace(/[<>]/g, '');
-      $('#blk').value = ['h1', 'h2', 'h3', 'blockquote', 'pre'].includes(v) ? v : 'p';
+      let node = s.anchorNode;
+      let blockVal = 'p';
+      while (node && node !== ed) {
+        const tag = (node.nodeName || '').toLowerCase();
+        if (['h1', 'h2', 'h3', 'blockquote', 'pre'].includes(tag)) {
+          blockVal = tag;
+          break;
+        }
+        node = node.parentNode;
+      }
+      if (document.activeElement !== $('#blk')) {
+        $('#blk').value = blockVal;
+      }
     } catch (e) {}
   }
 });
 const cmd = (c, v) => { ed.focus(); document.execCommand(c, false, v); sync(); };
 const ins = h => { ed.focus(); document.execCommand('insertHTML', false, h); sync(); };
 $('#blk').onchange = () => {
-  if (saved) { ed.focus(); const s = getSelection(); s.removeAllRanges(); s.addRange(saved); }
-  cmd('formatBlock', '<' + $('#blk').value + '>');
+  const val = $('#blk').value;
+  if (val === 'pre') {
+    formatOrInsertCode(ed, window, saved);
+  } else {
+    ed.focus();
+    if (saved) {
+      try {
+        const s = getSelection();
+        s.removeAllRanges();
+        s.addRange(saved);
+      } catch (err) {}
+    }
+    const sel = getSelection();
+    let node = sel && sel.anchorNode;
+    let preEl = null;
+    while (node && node !== ed) {
+      if (node.nodeName === 'PRE') { preEl = node; break; }
+      node = node.parentNode;
+    }
+    if (preEl) {
+      const targetEl = document.createElement(val);
+      targetEl.textContent = preEl.textContent || '';
+      if (!targetEl.textContent.trim()) targetEl.innerHTML = '<br>';
+      preEl.replaceWith(targetEl);
+      const r = document.createRange();
+      r.selectNodeContents(targetEl);
+      r.collapse(false);
+      sel.removeAllRanges();
+      sel.addRange(r);
+    } else {
+      cmd('formatBlock', '<' + val + '>');
+    }
+  }
+  sync();
 };
 
 const cell = '<td><br></td>', tbl = '<table><tbody>' + ('<tr>' + cell.repeat(3) + '</tr>').repeat(3) + '</tbody></table><p><br></p>';
@@ -1944,7 +2247,7 @@ $('#lki').onkeydown = e => {
   ['U', 'Underline', () => cmd('underline')],
   ['S', 'Strikethrough', () => cmd('strikeThrough')],
   ['HL', 'Highlight', () => cmd('hiliteColor', '#ff6a0055')],
-  ['</>', 'Code Block', () => cmd('formatBlock', '<pre>')],
+  ['</>', 'Code Block', () => formatOrInsertCode(ed, window, saved)],
   '|',
   ['•', 'Bullet list', () => cmd('insertUnorderedList')],
   ['1.', 'Numbered list', () => cmd('insertOrderedList')],
@@ -2025,6 +2328,7 @@ $('#sd').onclick = rmShape;
 
 const at = () => { const n = getSelection().anchorNode; return n && (n.nodeType == 3 ? n.parentElement : n); };
 ed.addEventListener('keydown', e => {
+  if (handleCodeBlockKeydown(e, ed, window)) return;
   if ((e.key == 'Delete' || e.key == 'Backspace') && selShape) { e.preventDefault(); rmShape(); return; }
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() == 'k') { e.preventDefault(); openLink(); return; }
   if (e.key == 'Tab') {
@@ -2051,14 +2355,20 @@ ed.addEventListener('keydown', e => {
       if (m) {
         e.preventDefault();
         n.deleteData(0, t.length);
-        if (m == 'ul' || m == 'ol') document.execCommand(m == 'ul' ? 'insertUnorderedList' : 'insertOrderedList');
-        else if (m == 'todo') {
+        if (m == 'pre') {
+          formatOrInsertCode(ed, window, saved);
+        } else if (m == 'ul' || m == 'ol') {
+          document.execCommand(m == 'ul' ? 'insertUnorderedList' : 'insertOrderedList');
+          sync();
+        } else if (m == 'todo') {
           document.execCommand('insertUnorderedList');
           const li = at() && at().closest('li');
           if (li) { li.parentElement.classList.add('todo'); li.insertAdjacentHTML('afterbegin', '<input type="checkbox">'); }
+          sync();
+        } else {
+          document.execCommand('formatBlock', false, '<' + m + '>');
+          sync();
         }
-        else document.execCommand('formatBlock', false, '<' + m + '>');
-        sync();
       }
     }
   }
@@ -2096,7 +2406,14 @@ function htmlToMd(h) {
   d.querySelectorAll('h1').forEach(x => x.replaceWith(`# ${x.textContent}\n\n`));
   d.querySelectorAll('h2').forEach(x => x.replaceWith(`## ${x.textContent}\n\n`));
   d.querySelectorAll('h3').forEach(x => x.replaceWith(`### ${x.textContent}\n\n`));
-  d.querySelectorAll('li').forEach(x => x.replaceWith(`- ${x.textContent}\n`));
+  d.querySelectorAll('pre').forEach(x => x.replaceWith(`\`\`\`\n${x.textContent.trim()}\n\`\`\`\n\n`));
+  d.querySelectorAll('code').forEach(x => { if (x.parentElement && x.parentElement.tagName !== 'PRE') x.replaceWith(`\`${x.textContent}\``); });
+  d.querySelectorAll('blockquote').forEach(x => x.replaceWith(`> ${x.textContent}\n\n`));
+  d.querySelectorAll('li').forEach(x => {
+    const chk = x.querySelector('input[type="checkbox"]');
+    const mark = chk ? (chk.checked ? '[x] ' : '[ ] ') : '- ';
+    x.replaceWith(`${mark}${x.textContent.trim()}\n`);
+  });
   d.querySelectorAll('p,div,br').forEach(x => x.insertAdjacentText('afterend', '\n'));
   return d.textContent.replace(/\n{3,}/g, '\n\n').trim();
 }
@@ -2404,8 +2721,9 @@ function openPopoutWindow() {
   const w = 420, h = 640;
   const left = Math.max(0, window.screen.availWidth - w - 20);
   const top = 40;
+  const baseUrl = window.location.href.split('?')[0].split('#')[0];
   const popup = window.open(
-    window.location.origin + window.location.pathname + '?mode=pocket',
+    baseUrl + '?mode=pocket',
     'CASPER_POCKET_WIN',
     `width=${w},height=${h},left=${left},top=${top},resizable=yes,scrollbars=yes,status=no,toolbar=no,menubar=no`
   );
@@ -2513,6 +2831,7 @@ function renderPocketInterface(container, pip) {
   
   container.innerHTML = `
     <div id="pocket-app">
+      <div id="crt"></div>
       <div class="hz"></div>
       <div class="pocket-pip-head">
         <div class="pocket-pip-brand">
@@ -2532,14 +2851,15 @@ function renderPocketInterface(container, pip) {
         <button id="pip-btn-pin" class="${n.pinned ? 'pri' : ''}" title="Pin note">★</button>
       </div>
       <div class="pocket-pip-toolbar">
-        <select id="pip-blk">
+        <select id="pip-blk" aria-label="Block formatting">
           <option value="p">Text</option>
           <option value="h1">H1</option>
           <option value="h2">H2</option>
           <option value="h3">H3</option>
           <option value="blockquote">Quote</option>
-          <option value="pre">Code</option>
+          <option value="pre">Code Block</option>
         </select>
+        <button id="pip-btn-code" title="Code Block (Pre)"><b>&lt;/&gt;</b></button>
         <button data-c="bold" title="Bold"><b>B</b></button>
         <button data-c="italic" title="Italic"><i>I</i></button>
         <button data-c="underline" title="Underline"><u>U</u></button>
@@ -2570,21 +2890,52 @@ function renderPocketInterface(container, pip) {
   const pipPin = container.querySelector('#pip-btn-pin');
   const pipWc = container.querySelector('#pip-wc');
   const pipClock = container.querySelector('#pip-clock');
+  const pipBlk = container.querySelector('#pip-blk');
+  const pipBtnCode = container.querySelector('#pip-btn-code');
+
+  let pipSaved = null;
 
   function updatePipStats() {
     const w = (pipEd.innerText.trim().match(/\S+/g) || []).length;
-    pipWc.textContent = w;
+    if (pipWc) pipWc.textContent = w;
   }
   updatePipStats();
+
+  // Track selection inside PiP window to ensure dropdowns and buttons know the active cursor/selection
+  pip.document.addEventListener('selectionchange', () => {
+    const s = pip.getSelection();
+    if (s && s.rangeCount && pipEd.contains(s.anchorNode)) {
+      pipSaved = s.getRangeAt(0).cloneRange();
+      try {
+        let node = s.anchorNode;
+        let blockVal = 'p';
+        while (node && node !== pipEd) {
+          const tag = (node.nodeName || '').toLowerCase();
+          if (['h1', 'h2', 'h3', 'blockquote', 'pre'].includes(tag)) {
+            blockVal = tag;
+            break;
+          }
+          node = node.parentNode;
+        }
+        if (pip.document.activeElement !== pipBlk) {
+          pipBlk.value = blockVal;
+        }
+      } catch (err) {}
+    }
+  });
 
   pipTitle.oninput = () => {
     const current = note();
     if (current) {
       current.name = pipTitle.value;
-      ti.value = pipTitle.value;
+      if (document.activeElement !== ti) ti.value = pipTitle.value;
       save();
       tree();
       crumb();
+      updateTopNoteSelector();
+      if (syncChannel) {
+        try { syncChannel.postMessage({ type: 'note-content', id: current.id, html: current.html, name: current.name }); } catch (e) {}
+      }
     }
   };
 
@@ -2592,19 +2943,87 @@ function renderPocketInterface(container, pip) {
     const current = note();
     if (current) {
       current.html = pipEd.innerHTML;
-      ed.innerHTML = pipEd.innerHTML;
+      if (document.activeElement !== ed) ed.innerHTML = pipEd.innerHTML;
       save();
       diskQ(current);
       stats();
       updatePipStats();
+      if (syncChannel) {
+        try { syncChannel.postMessage({ type: 'note-content', id: current.id, html: current.html, name: current.name }); } catch (e) {}
+      }
     }
   });
 
-  // Attach clipboard paste (including screenshots!)
+  // Checkbox toggle & persistence
+  pipEd.addEventListener('change', e => {
+    if (e.target && e.target.type === 'checkbox') {
+      e.target.toggleAttribute('checked', e.target.checked);
+      pipEd.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+  });
+
+  // Clipboard paste (screenshots, plain text, links)
   pipEd.addEventListener('paste', handlePaste);
 
-  // Markdown shortcuts in PiP
+  // Link & WikiLink clicks inside PiP
+  pipEd.addEventListener('click', e => {
+    const a = e.target.closest('a');
+    if (a) {
+      const h = a.getAttribute('href') || '';
+      if (h.startsWith('#wiki:')) {
+        e.preventDefault();
+        const targetName = decodeURIComponent(h.slice(6));
+        const targetNote = items.find(i => i.type === 'note' && (i.name || '').toLowerCase() === targetName.toLowerCase());
+        if (targetNote) {
+          cur = targetNote.id;
+          selF = targetNote.parent;
+          save();
+          openNote();
+          tree();
+          pipTitle.value = targetNote.name || '';
+          pipEd.innerHTML = targetNote.html || '';
+          pipPin.classList.toggle('pri', !!targetNote.pinned);
+          updatePipStats();
+          pipSel.value = cur;
+        } else if (confirm(`Directive "${targetName}" not found. Create it now?`)) {
+          add('note', target());
+          const newN = note();
+          if (newN) {
+            newN.name = targetName;
+            save();
+            tree();
+            openNote();
+            pipTitle.value = targetName;
+            pipEd.innerHTML = '';
+            pipSel.innerHTML = items.filter(x => x.type === 'note').map(x => `<option value="${x.id}" ${x.id === cur ? 'selected' : ''}>▫ ${esc(x.name || 'Untitled')}</option>`).join('');
+            pipSel.value = cur;
+          }
+        }
+      } else if (/^https?:\/\//i.test(h)) {
+        e.preventDefault();
+        window.open(h, '_blank', 'noopener,noreferrer');
+      }
+    }
+  });
+
+  // Code block & markdown shortcuts in PiP
   pipEd.addEventListener('keydown', e => {
+    if (handleCodeBlockKeydown(e, pipEd, pip)) return;
+
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+      e.preventDefault();
+      save();
+      const ps = container.querySelector('#pip-save');
+      if (ps) { ps.textContent = 'MAGI // SAVED'; setTimeout(() => { ps.textContent = 'MAGI // SYNCED'; }, 1000); }
+      return;
+    }
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      const clipBtn = container.querySelector('#pip-btn-clip');
+      if (clipBtn) clipBtn.click();
+      return;
+    }
+
     if (e.key === ' ' && !e.ctrlKey && !e.metaKey) {
       const s = pip.getSelection(), n = s.anchorNode;
       if (s.isCollapsed && n && n.nodeType === 3 && !n.previousSibling) {
@@ -2613,41 +3032,88 @@ function renderPocketInterface(container, pip) {
         if (m) {
           e.preventDefault();
           n.deleteData(0, t.length);
-          if (m === 'ul' || m === 'ol') pip.document.execCommand(m === 'ul' ? 'insertUnorderedList' : 'insertOrderedList');
-          else if (m === 'todo') {
+          if (m === 'pre') {
+            formatOrInsertCode(pipEd, pip, pipSaved);
+          } else if (m === 'ul' || m === 'ol') {
+            pip.document.execCommand(m === 'ul' ? 'insertUnorderedList' : 'insertOrderedList');
+            pipEd.dispatchEvent(new Event('input', { bubbles: true }));
+          } else if (m === 'todo') {
             pip.document.execCommand('insertUnorderedList');
             const li = n.parentElement && n.parentElement.closest('li');
             if (li) { li.parentElement.classList.add('todo'); li.insertAdjacentHTML('afterbegin', '<input type="checkbox">'); }
+            pipEd.dispatchEvent(new Event('input', { bubbles: true }));
+          } else {
+            pip.document.execCommand('formatBlock', false, '<' + m + '>');
+            pipEd.dispatchEvent(new Event('input', { bubbles: true }));
           }
-          else pip.document.execCommand('formatBlock', false, '<' + m + '>');
-          pipEd.dispatchEvent(new Event('input'));
         }
       }
     }
   });
 
-  // Format toolbar
+  // Standard inline formatting buttons
   container.querySelectorAll('.pocket-pip-toolbar button[data-c]').forEach(btn => {
     btn.onmousedown = e => e.preventDefault();
     btn.onclick = () => {
       pip.document.execCommand(btn.dataset.c, false, btn.dataset.v || null);
-      pipEd.dispatchEvent(new Event('input'));
+      pipEd.dispatchEvent(new Event('input', { bubbles: true }));
     };
   });
 
-  container.querySelector('#pip-blk').onchange = e => {
-    pip.document.execCommand('formatBlock', false, '<' + e.target.value + '>');
-    pipEd.dispatchEvent(new Event('input'));
+  // Direct Code Block button in PiP toolbar
+  if (pipBtnCode) {
+    pipBtnCode.onmousedown = e => e.preventDefault();
+    pipBtnCode.onclick = () => {
+      formatOrInsertCode(pipEd, pip, pipSaved);
+    };
+  }
+
+  // Block style selector in PiP toolbar
+  pipBlk.onchange = e => {
+    const val = pipBlk.value;
+    if (val === 'pre') {
+      formatOrInsertCode(pipEd, pip, pipSaved);
+    } else {
+      pipEd.focus();
+      if (pipSaved) {
+        try {
+          const s = pip.getSelection();
+          s.removeAllRanges();
+          s.addRange(pipSaved);
+        } catch (err) {}
+      }
+      const sel = pip.getSelection();
+      let node = sel && sel.anchorNode;
+      let preEl = null;
+      while (node && node !== pipEd) {
+        if (node.nodeName === 'PRE') { preEl = node; break; }
+        node = node.parentNode;
+      }
+      if (preEl) {
+        const targetEl = pip.document.createElement(val);
+        targetEl.textContent = preEl.textContent || '';
+        if (!targetEl.textContent.trim()) targetEl.innerHTML = '<br>';
+        preEl.replaceWith(targetEl);
+        const r = pip.document.createRange();
+        r.selectNodeContents(targetEl);
+        r.collapse(false);
+        sel.removeAllRanges();
+        sel.addRange(r);
+      } else {
+        pip.document.execCommand('formatBlock', false, '<' + val + '>');
+      }
+      pipEd.dispatchEvent(new Event('input', { bubbles: true }));
+    }
   };
 
   container.querySelector('#pip-btn-todo').onclick = () => {
     pip.document.execCommand('insertHTML', false, '<ul class="todo"><li><input type="checkbox">&nbsp;</li></ul>');
-    pipEd.dispatchEvent(new Event('input'));
+    pipEd.dispatchEvent(new Event('input', { bubbles: true }));
   };
 
   container.querySelector('#pip-btn-box').onclick = () => {
     pip.document.execCommand('insertHTML', false, '<div class="box"><b>MAGI DIRECTIVE</b><br>Tactical log entry…</div><p><br></p>');
-    pipEd.dispatchEvent(new Event('input'));
+    pipEd.dispatchEvent(new Event('input', { bubbles: true }));
   };
 
   container.querySelector('#pip-btn-clip').onclick = () => {
@@ -2659,7 +3125,7 @@ function renderPocketInterface(container, pip) {
         const fullUrl = /^(https?:|#)/.test(url) ? url : 'https://' + url;
         pip.document.execCommand('createLink', false, fullUrl);
       }
-      pipEd.dispatchEvent(new Event('input'));
+      pipEd.dispatchEvent(new Event('input', { bubbles: true }));
     }
   };
 
@@ -2731,10 +3197,17 @@ function updatePipIfOpen() {
     const pipEd = pipWin.document.querySelector('#pip-ed');
     const pipSel = pipWin.document.querySelector('#pip-sel-note');
     const pipPin = pipWin.document.querySelector('#pip-btn-pin');
-    if (pipTitle && pipTitle.value !== n.name) pipTitle.value = n.name || '';
-    if (pipEd && pipEd.innerHTML !== (n.html || '')) pipEd.innerHTML = n.html || '';
+    if (pipTitle && pipTitle.value !== n.name && pipWin.document.activeElement !== pipTitle) {
+      pipTitle.value = n.name || '';
+    }
+    if (pipEd && pipEd.innerHTML !== (n.html || '') && pipWin.document.activeElement !== pipEd) {
+      pipEd.innerHTML = n.html || '';
+      const w = (pipEd.innerText.trim().match(/\S+/g) || []).length;
+      const pipWc = pipWin.document.querySelector('#pip-wc');
+      if (pipWc) pipWc.textContent = w;
+    }
     if (pipPin) pipPin.classList.toggle('pri', !!n.pinned);
-    if (pipSel) {
+    if (pipSel && pipWin.document.activeElement !== pipSel) {
       const notes = items.filter(i => i.type === 'note');
       pipSel.innerHTML = notes.map(x => `<option value="${x.id}" ${x.id === cur ? 'selected' : ''}>▫ ${esc(x.name || 'Untitled')}</option>`).join('');
     }
@@ -3002,8 +3475,8 @@ window.addEventListener('storage', e => {
       openNote();
     } else {
       const n = note();
-      if (n && n.name !== ti.value) ti.value = n.name || '';
-      if (n && n.html !== ed.innerHTML) ed.innerHTML = n.html || '';
+      if (n && n.name !== ti.value && document.activeElement !== ti) ti.value = n.name || '';
+      if (n && n.html !== ed.innerHTML && document.activeElement !== ed) ed.innerHTML = n.html || '';
     }
     updateTopNoteSelector();
     updatePipIfOpen();
