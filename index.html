@@ -1,296 +1,1057 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="nerv">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>CASPER-03 // CENTRAL DOGMA ARCHIVE</title>
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Shippori+Mincho:wght@600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Shippori+Mincho:wght@600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
-:root{
-  --bg: #f4f1ea; --side: #ece8de; --page: #fffffff2; --text: #1c1c1c; --dim: #6f695c;
-  --accent: #c2410c; --accent2: #0f766e; --line: #00000024; --onacc: #fff; --dimmer: .55;
-  --fs: 18px; --hf: var(--serif); --hsc: 1;
+:root {
+  --bg: #f4f1ea;
+  --side: #ece8de;
+  --page: #fffffff2;
+  --text: #1c1c1c;
+  --dim: #6f695c;
+  --accent: #c2410c;
+  --accent2: #0f766e;
+  --danger: #dc2626;
+  --line: #00000024;
+  --onacc: #fff;
+  --dimmer: .55;
+  --fs: 18px;
+  --hf: var(--serif);
+  --hsc: 1;
   --wf: system-ui, -apple-system, "Segoe UI", sans-serif;
-  --mono: "Share Tech Mono", ui-monospace, Menlo, monospace;
+  --mono: "Share Tech Mono", "JetBrains Mono", ui-monospace, Menlo, monospace;
   --serif: "Shippori Mincho", "Hiragino Mincho ProN", Georgia, serif;
-  color-scheme: light; box-sizing: border-box;
+  color-scheme: light;
+  box-sizing: border-box;
   padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
 }
-:root[data-theme=nerv]{--bg:#070605;--side:#0d0a08;--page:#12100eee;--text:#ece3d2;--dim:#85796a;--accent:#ff6a00;--accent2:#00e08a;--line:#ffffff1c;--onacc:#000;color-scheme:dark}
-:root[data-theme=unit01]{--bg:#06030c;--side:#0e0818;--page:#120a1eee;--text:#ece4ff;--dim:#8a79b0;--accent:#a855f7;--accent2:#8cff1a;--line:#ffffff1c;--onacc:#000;color-scheme:dark}
-:root[data-theme=unit02]{--bg:#090303;--side:#140707;--page:#190909ee;--text:#ffece4;--dim:#a07a6e;--accent:#ff3a22;--accent2:#ffb000;--line:#ffffff1c;--onacc:#000;color-scheme:dark}
-:root[data-theme=seele]{--bg:#020202;--side:#080808;--page:#0d0dee;--text:#e2e2e2;--dim:#777777;--accent:#d4af37;--accent2:#ffffff;--line:#ffffff18;--onacc:#000;color-scheme:dark}
-
-*{box-sizing:border-box;scrollbar-width:thin;scrollbar-color:var(--accent) transparent}
-html,body{height:100%;margin:0}
-body{height:calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));background:var(--bg);color:var(--text);font-family:var(--mono);overflow:hidden}
-body[data-font=serif]{--wf:var(--serif)}
-body[data-font=mono]{--wf:var(--mono)}
-
-#bg{position:fixed;inset:0;background:center/cover no-repeat}
-#veil{position:fixed;inset:0;background:var(--bg);opacity:var(--dimmer)}
-#crt-overlay{position:fixed;inset:0;pointer-events:none;z-index:99;background:linear-gradient(rgba(18,16,14,0) 50%, rgba(0,0,0,0.15) 50%);background-size:100% 4px;opacity:0.3;display:block}
-body[data-crt=off] #crt-overlay{display:none}
-
-#bd{position:fixed;inset:0;z-index:9;background:#000a;display:none}
-#app{position:relative;height:100%;display:grid;grid-template-columns:280px minmax(0,1fr)}
-body.nosb #app{grid-template-columns:0 minmax(0,1fr)}
-body.nosb #sb{display:none}
-
-/* Pocket Mode Styles */
-body.pocket-mode #sb{display:none!important}
-body.pocket-mode #app{grid-template-columns:1fr!important}
-body.pocket-mode #top{padding:4px 8px;font-size:10px}
-body.pocket-mode #top button{padding:2px 6px;font-size:10px;min-height:24px}
-body.pocket-mode #title{font-size:20px;padding:12px 16px 2px}
-body.pocket-mode #bar{padding:2px 12px 4px}
-body.pocket-mode #ed{padding:8px 16px 80px;font-size:15px}
-body.pocket-mode #st{padding:4px 8px;font-size:10px}
-
-#sb{position:relative;background:var(--side);border-right:2px solid var(--accent);display:flex;flex-direction:column;min-height:0;overflow:hidden}
-.hz{height:7px;flex:none;background:repeating-linear-gradient(-45deg,var(--accent) 0 9px,#000 9px 18px)}
-.logo{padding:12px 14px 6px;font:800 22px/1 var(--serif);color:var(--accent)}
-.logo small{display:block;font:9px var(--mono);letter-spacing:.25em;color:var(--accent2);margin-top:4px}
-.sbtn{display:flex;gap:6px;padding:6px 12px}
-.sbtn button{flex:1}
-
-button,select,label.b,input[type=text],input[type=password]{background:transparent;color:var(--text);border:1px solid var(--line);font:12px var(--mono);padding:5px 9px;cursor:pointer;border-radius:0}
-button:hover,label.b:hover{background:var(--accent);color:var(--onacc);border-color:var(--accent)}
-body[data-cr=cut] :is(button,label.b){clip-path:polygon(6px 0,100% 0,100% calc(100% - 6px),calc(100% - 6px) 100%,0 100%,0 6px)}
-:focus-visible{outline:2px solid var(--accent2);outline-offset:2px}
-body[data-cr=cut] :is(button,label.b):focus-visible{outline:0;box-shadow:inset 0 0 0 2px var(--accent2)}
-
-#q{margin:2px 12px 6px;width:calc(100% - 24px);cursor:text;font-size:13px}
-#tree{flex:1;overflow:auto;padding:4px 6px 20px;overscroll-behavior:contain}
-.row{display:flex;align-items:center;gap:6px;padding:6px 8px;font-size:14px;cursor:pointer;border-left:3px solid transparent;user-select:none;white-space:nowrap}
-.row .nm{flex:1;overflow:hidden;text-overflow:ellipsis}
-.row .ic{color:var(--accent);width:14px;text-align:center}
-.row:hover{background:color-mix(in srgb,var(--accent) 8%,transparent)}
-.row.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent)}
-.row.sel{background:color-mix(in srgb,var(--text) 8%,transparent)}
-.row.dr{outline:1px dashed var(--accent2)}
-.row .ac{display:none;gap:2px}
-.row:hover .ac,.row:focus-within .ac{display:flex}
-.ac span{padding:0 4px;color:var(--dim)}
-.ac span:hover{color:var(--accent2)}
-.ac .arm{color:#fff;background:#d33}
-.row input{flex:1;min-width:0;padding:1px 4px;font-size:14px}
-.sub{font-size:11px;color:var(--dim);padding:0 12px 6px 28px}
-.sfoot{border-top:1px solid var(--line);padding:8px 12px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-.sfoot button,.sfoot label{font-size:11px;padding:3px 7px}
-
-#main{display:flex;flex-direction:column;min-width:0;min-height:0;position:relative}
-#top{display:flex;align-items:center;gap:8px;padding:8px 14px;border-bottom:1px solid var(--line);background:var(--side);font-size:12px;color:var(--dim);flex:none}
-#crumb{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:.08em}
-#crumb b{color:var(--accent)}
-#pdfb{background:var(--accent);color:var(--onacc);border-color:var(--accent)}
-
-#stage{flex:1;min-height:0;display:flex;justify-content:center}
-#page{width:100%;max-width:860px;background:var(--page);display:flex;flex-direction:column;min-height:0}
-body[data-cr=cut] #page{clip-path:polygon(0 0,calc(100% - 24px) 0,100% 24px,100% 100%,24px 100%,0 calc(100% - 24px))}
-
-#title{background:transparent;border:0;outline:0;color:var(--text);font:800 clamp(28px,4vw,42px)/1.15 var(--serif);padding:26px 34px 6px;width:100%}
-#bar{display:flex;gap:2px;padding:4px 28px 8px;align-items:center;overflow-x:auto;scrollbar-width:none;flex:none;border-bottom:1px solid var(--line)}
-#bar>*{flex:none}
-#bar::-webkit-scrollbar{display:none}
-#bar button{border:0;color:var(--dim);padding:4px 9px;font-size:13px}
-#bar select{border:0;color:var(--dim);font-size:12px;padding:3px 4px}
-#bar i{width:1px;height:18px;background:var(--line);margin:0 5px}
-
-#shg{display:none;gap:2px;align-items:center;border:1px dashed var(--accent2);padding:0 4px;margin-left:6px}
-#shg.on{display:flex}
-#shg input{width:28px;height:24px;padding:0;border:0;background:none}
-
-#lkb{display:flex;gap:6px;padding:6px 28px;border-bottom:1px solid var(--line)}
-#lkb[hidden]{display:none}
-#lkb input{flex:1;font-size:14px;cursor:text}
-
-#edw{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain}
-#ed{min-height:100%;padding:14px 34px 140px;outline:0;font:var(--fs)/1.8 var(--wf);caret-color:var(--accent2);word-wrap:break-word}
-#ed:empty::before{content:attr(data-ph);color:var(--dim)}
-#ed h1,#ed h2,#ed h3{font-family:var(--hf);font-weight:800;line-height:1.25;color:var(--accent);margin:1.2em 0 .4em}
-#ed h1{font-size:calc(2em*var(--hsc))}
-#ed h2{font-size:calc(1.55em*var(--hsc))}
-#ed h3{font-size:calc(1.25em*var(--hsc))}
-
-body[data-hc=upper] #ed :is(h1,h2,h3){text-transform:uppercase;letter-spacing:.03em}
-body[data-hs=plain] #ed h2{border-bottom:1px solid var(--line);padding-bottom:4px}
-body[data-hs=bracket] #ed :is(h1,h2,h3){border-left:7px solid var(--accent);padding-left:12px}
-body[data-hs=block] #ed :is(h1,h2,h3){display:table;background:var(--accent);color:var(--onacc);padding:2px 22px 2px 12px;clip-path:polygon(0 0,100% 0,calc(100% - 12px) 100%,0 100%)}
-body[data-hs=slash] #ed :is(h1,h2,h3)::before{content:"//";margin-right:.4em;opacity:.7}
-body[data-hs=hazard] #ed :is(h1,h2,h3){padding-bottom:10px;background:repeating-linear-gradient(-45deg,var(--accent) 0 6px,transparent 6px 12px) left bottom/100% 5px no-repeat}
-body[data-hs=boxed] #ed :is(h1,h2,h3){display:table;border:2px solid var(--accent);padding:2px 14px;box-shadow:5px 5px 0 var(--accent)}
-
-#ed p{margin:.5em 0}
-#ed blockquote{margin:14px 0;padding:4px 16px;border-left:5px solid var(--accent);background:color-mix(in srgb,var(--accent) 8%,transparent)}
-#ed a{color:var(--accent2)}
-#ed hr{border:0;border-top:2px dashed var(--accent);margin:18px 0}
-#ed img{max-width:100%}
-#ed table{border-collapse:collapse;width:100%}
-#ed td,#ed th{border:1px solid var(--line);padding:8px 10px;min-width:60px}
-#ed .box{margin:16px 0;padding:8px 22px;border-left:6px solid var(--accent);background:color-mix(in srgb,var(--accent) 9%,transparent);clip-path:polygon(0 0,calc(100% - 18px) 0,100% 18px,100% 100%,0 100%)}
-#ed ul.todo{list-style:none;padding-left:4px}
-#ed .todo input{accent-color:var(--accent);margin-right:8px;transform:scale(1.25)}
-
-.shp{display:inline-block;vertical-align:middle;margin:4px 6px;cursor:pointer;line-height:0;user-select:none}
-.shp svg{width:100%;height:auto;display:block}
-.shp.wide{display:block;margin:14px 0}
-.shp.selx{outline:2px dashed var(--accent2);outline-offset:3px}
-
-body:not([data-hm=none]) #ed :is(h1,h2,h3)::before{content:"";display:inline-block;width:.55em;height:.55em;margin-right:.5em;background:currentColor;clip-path:var(--hm);opacity:1;vertical-align:.04em}
-body:not([data-bm=none]) #ed ul:not(.todo){list-style:none;padding-left:1.5em}
-body:not([data-bm=none]) #ed ul:not(.todo)>li{position:relative}
-body:not([data-bm=none]) #ed ul:not(.todo)>li::before{content:"";position:absolute;left:-1.25em;top:.62em;width:.55em;height:.55em;background:var(--accent);clip-path:var(--bm)}
-
-[hidden]{display:none!important}
-#ptitle{display:none}
-
-#st{display:flex;gap:16px;align-items:center;padding:6px 16px;background:var(--side);border-top:1px solid var(--accent);font-size:12px;color:var(--dim);flex:none;flex-wrap:wrap}
-#st b{color:var(--accent2)}
-#empty{margin:auto;color:var(--dim);text-align:center;padding:40px}
-
-#sp{position:absolute;top:46px;right:14px;z-index:20;width:290px;max-height:calc(100dvh - 70px);overflow:auto;background:var(--side);border:2px solid var(--accent);padding:8px 14px 12px;box-shadow:6px 6px 0 var(--accent)}
-#sp[hidden]{display:none}
-#sp h4{margin:12px 0 6px;font:11px var(--mono);letter-spacing:.2em;color:var(--accent)}
-#sp label{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:7px 0;font-size:12px}
-#sp input[type=range]{width:120px;accent-color:var(--accent)}
-#sp input[type=color]{width:46px;height:24px;padding:0;border:1px solid var(--line);background:none}
-
-.rowb{display:flex;gap:6px;flex-wrap:wrap}
-.sw{width:52px;height:34px;padding:0;border:1px solid var(--line)}
-.sw.on{outline:3px solid var(--accent2);outline-offset:1px}
-
-/* Login Modal */
-#login-modal{position:fixed;inset:0;background:#050403ee;z-index:999;display:flex;align-items:center;justify-content:center}
-#login-box{background:var(--side);border:2px solid var(--accent);width:380px;max-width:90vw;padding:24px;box-shadow:8px 8px 0 var(--accent)}
-#login-box h2{margin:0 0 4px;font:800 20px var(--serif);color:var(--accent)}
-#login-box p{margin:0 0 16px;font-size:11px;color:var(--dim);letter-spacing:.1em}
-#login-box input{width:100%;margin-bottom:12px;padding:8px;font-size:14px}
-#login-box button{width:100%;padding:10px;background:var(--accent);color:var(--onacc);font-weight:bold;margin-top:4px}
-.saved-users{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
-.saved-user-chip{font-size:10px;background:color-mix(in srgb,var(--accent) 15%,transparent);border:1px solid var(--accent);padding:3px 6px;cursor:pointer}
-
-@media(hover:none){.row .ac{display:flex}}
-@media(pointer:coarse){button,select,label.b{min-height:40px}.row{padding:11px 8px}.ac span{padding:4px 9px}#bar button{min-width:40px}}
-@media(max-width:800px){
-  #app{grid-template-columns:1fr}
-  body.nosb #app{grid-template-columns:1fr}
-  body.nosb #sb{display:flex}
-  #sb{position:fixed;z-index:10;left:0;top:0;bottom:0;width:86%;max-width:320px;transform:translateX(-100%);transition:transform .2s}
-  body.sbo #sb{transform:none}
-  body.sbo #bd{display:block}
-  #q,#rn,#lkb input,select{font-size:16px!important}
-  body[data-cr=cut] #page{clip-path:none}
-  #title{padding:18px 18px 4px}
-  #ed{padding-left:18px;padding-right:18px}
-  #bar,#lkb{padding-left:12px;padding-right:12px}
-  #sp{position:fixed;left:8px;right:8px;top:auto;bottom:calc(8px + env(safe-area-inset-bottom,0px));width:auto;max-height:72dvh;box-shadow:none}
-  #top{padding:6px 10px}
-  #st>span:nth-child(2){display:none}
+:root[data-theme=nerv] {
+  --bg: #070605;
+  --side: #0d0a08;
+  --page: #120f0cee;
+  --text: #ece3d2;
+  --dim: #8c7f70;
+  --accent: #ff6a00;
+  --accent2: #00e08a;
+  --danger: #ff2e2e;
+  --line: #ff6a0033;
+  --onacc: #000;
+  color-scheme: dark;
 }
-@media(prefers-reduced-motion:reduce){*{transition:none!important}}
-@page{margin:18mm}
-@media print{
-  :root{--text:#111;--page:#fff;--line:#0003}
-  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  body{overflow:visible;height:auto;background:#fff}
-  #bg,#veil,#crt-overlay,#bd,#sb,#top,#bar,#lkb,#st,#sp,#title{display:none!important}
-  #app,#main,#stage,#page,#edw{display:block;height:auto;overflow:visible;clip-path:none!important;background:#fff}
-  #ptitle{display:block;font:800 30px var(--serif);margin:0 0 12px}
-  #ed{padding:0;color:#111}
-  .shp.selx{outline:0}
+:root[data-theme=unit01] {
+  --bg: #06030c;
+  --side: #0e0818;
+  --page: #120a1eee;
+  --text: #ece4ff;
+  --dim: #8a79b0;
+  --accent: #a855f7;
+  --accent2: #8cff1a;
+  --danger: #ff3a5e;
+  --line: #a855f733;
+  --onacc: #000;
+  color-scheme: dark;
+}
+:root[data-theme=unit02] {
+  --bg: #090303;
+  --side: #140707;
+  --page: #190909ee;
+  --text: #ffece4;
+  --dim: #a07a6e;
+  --accent: #ff3a22;
+  --accent2: #ffb000;
+  --danger: #ff0055;
+  --line: #ff3a2233;
+  --onacc: #000;
+  color-scheme: dark;
+}
+:root[data-theme=seele] {
+  --bg: #030304;
+  --side: #08080a;
+  --page: #0c0c10f2;
+  --text: #e2e8f0;
+  --dim: #64748b;
+  --accent: #e11d48;
+  --accent2: #38bdf8;
+  --danger: #f43f5e;
+  --line: #e11d4838;
+  --onacc: #fff;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) transparent;
+}
+*::-webkit-scrollbar { width: 6px; height: 6px; }
+*::-webkit-scrollbar-thumb { background: var(--accent); }
+*::-webkit-scrollbar-track { background: transparent; }
+
+html, body { height: 100%; margin: 0; }
+body {
+  height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--mono);
+  overflow: hidden;
+}
+body[data-font=serif] { --wf: var(--serif); }
+body[data-font=mono] { --wf: var(--mono); }
+
+/* Tactical Hex Grid & CRT Overlay */
+#bg { position: fixed; inset: 0; background: center/cover no-repeat; z-index: 0; }
+#veil {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  opacity: var(--dimmer);
+  z-index: 0;
+  background-image: radial-gradient(var(--line) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+#crt {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999;
+  background:
+    linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.22) 50%),
+    radial-gradient(circle at center, transparent 65%, rgba(0, 0, 0, 0.45) 100%);
+  background-size: 100% 3px, 100% 100%;
+  opacity: 0;
+  transition: opacity .25s;
+}
+body.crt-on #crt { opacity: 1; }
+
+#bd { position: fixed; inset: 0; z-index: 15; background: #000b; display: none; backdrop-filter: blur(2px); }
+#app { position: relative; z-index: 1; height: 100%; display: grid; grid-template-columns: 300px minmax(0, 1fr); }
+body.nosb #app { grid-template-columns: 0 minmax(0, 1fr); }
+body.nosb #sb { display: none; }
+
+/* Sidebar */
+#sb {
+  position: relative;
+  background: var(--side);
+  border-right: 2px solid var(--accent);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  box-shadow: 4px 0 24px rgba(0,0,0,0.35);
+}
+.hz {
+  height: 8px;
+  flex: none;
+  background: repeating-linear-gradient(-45deg, var(--accent) 0 10px, #000 10px 20px);
+}
+.logo-wrap {
+  padding: 12px 14px 8px;
+  border-bottom: 1px solid var(--line);
+  position: relative;
+}
+.logo-tag {
+  display: inline-block;
+  font-size: 10px;
+  padding: 1px 5px;
+  background: var(--accent);
+  color: var(--onacc);
+  font-weight: 700;
+  letter-spacing: .16em;
+  margin-bottom: 4px;
+}
+.logo {
+  font: 800 22px/1.05 var(--serif);
+  color: var(--accent);
+  letter-spacing: .03em;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.logo small {
+  display: block;
+  font: 10px var(--mono);
+  letter-spacing: .22em;
+  color: var(--accent2);
+  margin-top: 5px;
+}
+.magi-tri {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--line);
+  font-size: 9px;
+  letter-spacing: .08em;
+}
+.magi-node {
+  border: 1px solid var(--accent2);
+  color: var(--accent2);
+  padding: 2px 4px;
+  text-align: center;
+  background: color-mix(in srgb, var(--accent2) 8%, transparent);
+}
+.magi-node b { display: block; font-size: 10px; }
+
+.sbtn { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; padding: 8px 12px 4px; }
+.sbtn-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; padding: 0 12px 6px; }
+
+button, select, label.b, input[type=text], input[type=password] {
+  background: color-mix(in srgb, var(--text) 3%, transparent);
+  color: var(--text);
+  border: 1px solid var(--line);
+  font: 12px var(--mono);
+  padding: 5px 9px;
+  cursor: pointer;
+  border-radius: 0;
+  transition: background .12s, color .12s, border-color .12s, transform .08s;
+}
+button:hover, label.b:hover {
+  background: var(--accent);
+  color: var(--onacc);
+  border-color: var(--accent);
+}
+button:active { transform: translateY(1px); }
+button.pri {
+  background: var(--accent);
+  color: var(--onacc);
+  border-color: var(--accent);
+  font-weight: 700;
+}
+button.pri:hover {
+  background: var(--accent2);
+  border-color: var(--accent2);
+  color: #000;
+}
+button.sec {
+  border-color: var(--accent2);
+  color: var(--accent2);
+}
+button.sec:hover {
+  background: var(--accent2);
+  color: #000;
+}
+
+body[data-cr=cut] :is(button, label.b) {
+  clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
+}
+:focus-visible { outline: 2px solid var(--accent2); outline-offset: 2px; }
+body[data-cr=cut] :is(button, label.b):focus-visible { outline: 0; box-shadow: inset 0 0 0 2px var(--accent2); }
+
+.search-box {
+  position: relative;
+  margin: 2px 12px 6px;
+}
+#q {
+  width: 100%;
+  cursor: text;
+  font-size: 13px;
+  padding-right: 52px;
+}
+.search-kbd {
+  position: absolute;
+  right: 7px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 10px;
+  color: var(--dim);
+  border: 1px solid var(--line);
+  padding: 1px 4px;
+  pointer-events: none;
+}
+
+#tree { flex: 1; overflow: auto; padding: 4px 6px 20px; overscroll-behavior: contain; }
+.row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  font-size: 13.5px;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  user-select: none;
+  white-space: nowrap;
+  transition: background .1s;
+}
+.row .nm { flex: 1; overflow: hidden; text-overflow: ellipsis; }
+.row .ic { color: var(--accent); width: 15px; text-align: center; flex: none; }
+.row .pin-ic { color: var(--accent2); font-size: 11px; margin-right: 2px; }
+.row:hover { background: color-mix(in srgb, var(--accent) 10%, transparent); }
+.row.on {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  color: var(--accent);
+  font-weight: 700;
+}
+.row.sel { background: color-mix(in srgb, var(--text) 8%, transparent); }
+.row.dr { outline: 1px dashed var(--accent2); background: color-mix(in srgb, var(--accent2) 14%, transparent); }
+.row .ac { display: none; gap: 2px; align-items: center; }
+.row:hover .ac, .row:focus-within .ac { display: flex; }
+.ac span {
+  padding: 1px 4px;
+  color: var(--dim);
+  font-size: 12px;
+  border: 1px solid transparent;
+}
+.ac span:hover {
+  color: var(--accent2);
+  border-color: var(--accent2);
+  background: color-mix(in srgb, var(--accent2) 12%, transparent);
+}
+.ac .arm { color: #fff !important; background: var(--danger) !important; border-color: var(--danger) !important; padding: 1px 5px; }
+.row input { flex: 1; min-width: 0; padding: 1px 4px; font-size: 13.5px; }
+.sub { font-size: 11px; color: var(--dim); padding: 2px 12px 6px 26px; }
+
+.sfoot {
+  border-top: 1px solid var(--line);
+  padding: 8px 10px;
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  align-items: center;
+  background: color-mix(in srgb, var(--bg) 40%, var(--side));
+}
+.sfoot button, .sfoot label { font-size: 11px; padding: 3px 7px; }
+
+/* Main & Topbar */
+#main { display: flex; flex-direction: column; min-width: 0; min-height: 0; position: relative; }
+#top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-bottom: 1px solid var(--line);
+  background: var(--side);
+  font-size: 12px;
+  color: var(--dim);
+  flex: none;
+  flex-wrap: wrap;
+}
+#crumb {
+  flex: 1;
+  min-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  letter-spacing: .07em;
+}
+#crumb b { color: var(--accent); }
+.op-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 9px;
+  border: 1px solid var(--accent2);
+  color: var(--accent2);
+  font-size: 11px;
+  letter-spacing: .08em;
+  cursor: pointer;
+  background: color-mix(in srgb, var(--accent2) 8%, transparent);
+}
+.op-badge:hover {
+  background: var(--accent2);
+  color: #000;
+}
+.op-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent2);
+  box-shadow: 0 0 6px var(--accent2);
+}
+
+/* Stage & Editor Page */
+#stage { flex: 1; min-height: 0; display: flex; justify-content: center; padding: 0 8px; }
+#page {
+  width: 100%;
+  max-width: 880px;
+  background: var(--page);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border-left: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.25);
+}
+body[data-cr=cut] #page {
+  clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 24px 100%, 0 calc(100% - 24px));
+}
+.title-row {
+  display: flex;
+  align-items: center;
+  padding: 22px 34px 4px;
+  gap: 10px;
+}
+#title {
+  background: transparent;
+  border: 0;
+  outline: 0;
+  color: var(--text);
+  font: 800 clamp(26px, 3.8vw, 40px)/1.15 var(--serif);
+  padding: 0;
+  width: 100%;
+  flex: 1;
+}
+#pinb {
+  font-size: 15px;
+  padding: 4px 9px;
+  border: 1px solid var(--line);
+  color: var(--dim);
+}
+#pinb.on {
+  color: var(--accent2);
+  border-color: var(--accent2);
+  background: color-mix(in srgb, var(--accent2) 12%, transparent);
+}
+
+#bar {
+  display: flex;
+  gap: 2px;
+  padding: 6px 28px 8px;
+  align-items: center;
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex: none;
+  border-bottom: 1px solid var(--line);
+}
+#bar > * { flex: none; }
+#bar::-webkit-scrollbar { display: none; }
+#bar button { border: 0; color: var(--dim); padding: 4px 8px; font-size: 12.5px; }
+#bar button:hover { color: var(--onacc); background: var(--accent); }
+#bar select { border: 1px solid var(--line); color: var(--text); font-size: 12px; padding: 3px 6px; }
+#bar i { width: 1px; height: 18px; background: var(--line); margin: 0 4px; }
+#shg {
+  display: none;
+  gap: 2px;
+  align-items: center;
+  border: 1px dashed var(--accent2);
+  padding: 0 4px;
+  margin-left: 6px;
+}
+#shg.on { display: flex; }
+#shg input { width: 26px; height: 22px; padding: 0; border: 0; background: none; }
+
+#lkb {
+  display: flex;
+  gap: 6px;
+  padding: 6px 28px;
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+}
+#lkb[hidden] { display: none; }
+#lkb input { flex: 1; font-size: 13px; cursor: text; }
+
+#edw { flex: 1; min-height: 0; overflow: auto; overscroll-behavior: contain; }
+#ed {
+  min-height: 100%;
+  padding: 16px 34px 140px;
+  outline: 0;
+  font: var(--fs)/1.8 var(--wf);
+  caret-color: var(--accent2);
+  word-wrap: break-word;
+}
+#ed:empty::before { content: attr(data-ph); color: var(--dim); }
+#ed h1, #ed h2, #ed h3 {
+  font-family: var(--hf);
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--accent);
+  margin: 1.2em 0 .4em;
+}
+#ed h1 { font-size: calc(2em * var(--hsc)); }
+#ed h2 { font-size: calc(1.55em * var(--hsc)); }
+#ed h3 { font-size: calc(1.25em * var(--hsc)); }
+body[data-hc=upper] #ed :is(h1, h2, h3) { text-transform: uppercase; letter-spacing: .04em; }
+body[data-hs=plain] #ed h2 { border-bottom: 1px solid var(--line); padding-bottom: 4px; }
+body[data-hs=bracket] #ed :is(h1, h2, h3) { border-left: 7px solid var(--accent); padding-left: 12px; }
+body[data-hs=block] #ed :is(h1, h2, h3) {
+  display: table;
+  background: var(--accent);
+  color: var(--onacc);
+  padding: 2px 22px 2px 12px;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
+}
+body[data-hs=slash] #ed :is(h1, h2, h3)::before { content: "//"; margin-right: .4em; opacity: .7; }
+body[data-hs=hazard] #ed :is(h1, h2, h3) {
+  padding-bottom: 10px;
+  background: repeating-linear-gradient(-45deg, var(--accent) 0 6px, transparent 6px 12px) left bottom/100% 5px no-repeat;
+}
+body[data-hs=boxed] #ed :is(h1, h2, h3) {
+  display: table;
+  border: 2px solid var(--accent);
+  padding: 2px 14px;
+  box-shadow: 5px 5px 0 var(--accent);
+}
+#ed p { margin: .5em 0; }
+#ed blockquote {
+  margin: 14px 0;
+  padding: 6px 16px;
+  border-left: 5px solid var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+#ed pre {
+  margin: 14px 0;
+  padding: 12px 16px;
+  background: #050507;
+  color: var(--accent2);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--accent2);
+  font: 14px/1.55 var(--mono);
+  overflow-x: auto;
+}
+#ed code {
+  font-family: var(--mono);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  padding: 1px 5px;
+  font-size: .9em;
+}
+#ed pre code { background: none; padding: 0; color: inherit; }
+#ed a { color: var(--accent2); text-decoration: underline; text-underline-offset: 3px; }
+#ed hr { border: 0; border-top: 2px dashed var(--accent); margin: 18px 0; }
+#ed img { max-width: 100%; }
+#ed table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+#ed td, #ed th { border: 1px solid var(--line); padding: 8px 10px; min-width: 60px; }
+#ed th { background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--accent); text-align: left; }
+#ed .box {
+  margin: 16px 0;
+  padding: 10px 22px;
+  border-left: 6px solid var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%);
+}
+#ed .box.warn {
+  border-left-color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 12%, transparent);
+}
+#ed ul.todo { list-style: none; padding-left: 4px; }
+#ed .todo input { accent-color: var(--accent); margin-right: 8px; transform: scale(1.25); cursor: pointer; }
+
+.shp { display: inline-block; vertical-align: middle; margin: 4px 6px; cursor: pointer; line-height: 0; user-select: none; }
+.shp svg { width: 100%; height: auto; display: block; }
+.shp.wide { display: block; margin: 14px 0; }
+.shp.selx { outline: 2px dashed var(--accent2); outline-offset: 3px; }
+
+body:not([data-hm=none]) #ed :is(h1, h2, h3)::before {
+  content: "";
+  display: inline-block;
+  width: .55em;
+  height: .55em;
+  margin-right: .5em;
+  background: currentColor;
+  clip-path: var(--hm);
+  opacity: 1;
+  vertical-align: .04em;
+}
+body:not([data-bm=none]) #ed ul:not(.todo) { list-style: none; padding-left: 1.5em; }
+body:not([data-bm=none]) #ed ul:not(.todo) > li { position: relative; }
+body:not([data-bm=none]) #ed ul:not(.todo) > li::before {
+  content: "";
+  position: absolute;
+  left: -1.25em;
+  top: .62em;
+  width: .55em;
+  height: .55em;
+  background: var(--accent);
+  clip-path: var(--bm);
+}
+
+[hidden] { display: none !important; }
+#ptitle { display: none; }
+
+/* Status Footer Bar */
+#st {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 6px 16px;
+  background: var(--side);
+  border-top: 1px solid var(--accent);
+  font-size: 11.5px;
+  color: var(--dim);
+  flex: none;
+  flex-wrap: wrap;
+}
+#st b { color: var(--accent2); }
+#dsk { color: var(--accent); font-weight: 700; }
+
+#empty { margin: auto; color: var(--dim); text-align: center; padding: 40px; }
+
+/* Style Popover & Modals */
+#sp {
+  position: absolute;
+  top: 46px;
+  right: 14px;
+  z-index: 25;
+  width: 310px;
+  max-height: calc(100dvh - 70px);
+  overflow: auto;
+  background: var(--side);
+  border: 2px solid var(--accent);
+  padding: 8px 14px 14px;
+  box-shadow: 6px 6px 0 var(--accent);
+}
+#sp h4 { margin: 12px 0 6px; font: 700 11px var(--mono); letter-spacing: .2em; color: var(--accent); border-bottom: 1px solid var(--line); padding-bottom: 3px; }
+#sp label { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin: 7px 0; font-size: 12px; }
+#sp input[type=range] { width: 120px; accent-color: var(--accent); }
+#sp input[type=color] { width: 46px; height: 24px; padding: 0; border: 1px solid var(--line); background: none; }
+.rowb { display: flex; gap: 6px; flex-wrap: wrap; }
+.sw { width: 48px; height: 32px; padding: 0; border: 1px solid var(--line); position: relative; }
+.sw.on { outline: 2px solid var(--accent2); outline-offset: 2px; }
+
+/* Modal System (PC Folder Sync + Command Palette + Login Gate) */
+.modal-wrap {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(3, 3, 5, 0.82);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.modal-card {
+  width: 100%;
+  max-width: 520px;
+  background: var(--side);
+  border: 2px solid var(--accent);
+  box-shadow: 8px 8px 0 var(--accent);
+  overflow: hidden;
+}
+.modal-head {
+  padding: 10px 16px;
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  border-bottom: 1px solid var(--accent);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: .12em;
+  font-size: 13px;
+}
+.modal-body { padding: 16px; font-size: 13px; }
+.sync-grid { display: grid; gap: 10px; margin-top: 10px; }
+.sync-opt {
+  border: 1px solid var(--line);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: color-mix(in srgb, var(--text) 2%, transparent);
+}
+.sync-opt b { color: var(--accent2); font-size: 13px; letter-spacing: .06em; }
+.sync-opt p { margin: 0; font-size: 11.5px; color: var(--dim); line-height: 1.45; }
+
+/* Command Palette */
+#cmd-list {
+  max-height: 290px;
+  overflow-y: auto;
+  margin-top: 10px;
+  border: 1px solid var(--line);
+}
+.cmd-item {
+  padding: 8px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  border-bottom: 1px solid var(--line);
+  font-size: 12.5px;
+}
+.cmd-item:hover, .cmd-item.active {
+  background: var(--accent);
+  color: var(--onacc);
+}
+.cmd-item small { opacity: .75; font-size: 10.5px; }
+
+/* Authentication Gate (Login Screen) */
+#auth-gate {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background:
+    radial-gradient(circle at 50% 35%, rgba(255, 106, 0, 0.14), transparent 65%),
+    repeating-linear-gradient(0deg, rgba(255, 106, 0, 0.03) 0 1px, transparent 1px 24px),
+    #060504;
+  color: #ece3d2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.auth-box {
+  width: 100%;
+  max-width: 460px;
+  background: #0d0a08;
+  border: 2px solid #ff6a00;
+  box-shadow: 0 0 50px rgba(255, 106, 0, 0.22), 8px 8px 0 #ff6a00;
+  clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 22px, 100% 100%, 22px 100%, 0 calc(100% - 22px));
+}
+.auth-inner { padding: 22px 26px 24px; }
+.auth-warn {
+  display: inline-block;
+  background: #ff6a00;
+  color: #000;
+  font-weight: 700;
+  font-size: 10px;
+  padding: 2px 7px;
+  letter-spacing: .2em;
+  margin-bottom: 8px;
+}
+.auth-title {
+  font: 800 28px/1.1 var(--serif);
+  color: #ff6a00;
+  margin: 0 0 4px;
+  letter-spacing: .04em;
+}
+.auth-sub {
+  font-size: 11px;
+  color: #00e08a;
+  letter-spacing: .18em;
+  margin-bottom: 18px;
+}
+.magi-pillars {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 18px;
+}
+.pillar {
+  border: 1px solid #00e08a88;
+  background: rgba(0, 224, 138, 0.06);
+  padding: 6px;
+  text-align: center;
+  font-size: 10px;
+  color: #00e08a;
+}
+.pillar b { display: block; font-size: 11px; color: #fff; margin-bottom: 2px; }
+.auth-field { margin-bottom: 12px; }
+.auth-field label {
+  display: block;
+  font-size: 11px;
+  color: #ff6a00;
+  letter-spacing: .12em;
+  margin-bottom: 4px;
+}
+.auth-field input, .auth-field select {
+  width: 100%;
+  padding: 9px 11px;
+  font-size: 14px;
+  background: #14100d;
+  border: 1px solid #ff6a0066;
+  color: #ece3d2;
+  outline: none;
+}
+.auth-field input:focus, .auth-field select:focus {
+  border-color: #00e08a;
+  box-shadow: 0 0 0 1px #00e08a;
+}
+.auth-rem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11.5px;
+  color: #b5a695;
+  margin: 12px 0 16px;
+  cursor: pointer;
+}
+.auth-rem input { accent-color: #ff6a00; transform: scale(1.15); }
+.auth-msg {
+  font-size: 11.5px;
+  min-height: 18px;
+  margin-bottom: 10px;
+  color: #ff3a22;
+  letter-spacing: .05em;
+}
+.auth-msg.ok { color: #00e08a; }
+.auth-actions { display: flex; gap: 8px; }
+.auth-actions button {
+  flex: 1;
+  padding: 10px;
+  font-size: 13px;
+  letter-spacing: .1em;
+}
+.saved-ops {
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px dashed #ff6a0044;
+  font-size: 11px;
+  color: #8c7f70;
+}
+.op-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid #ff6a0066;
+  padding: 2px 8px;
+  margin: 4px 4px 0 0;
+  cursor: pointer;
+  color: #ece3d2;
+  font-size: 11px;
+}
+.op-chip:hover { border-color: #00e08a; color: #00e08a; }
+
+@media(hover:none) { .row .ac { display: flex; } }
+@media(pointer:coarse) {
+  button, select, label.b { min-height: 38px; }
+  .row { padding: 10px 8px; }
+  .ac span { padding: 4px 8px; }
+  #bar button { min-width: 38px; }
+}
+@media(max-width: 820px) {
+  #app { grid-template-columns: 1fr; }
+  body.nosb #app { grid-template-columns: 1fr; }
+  body.nosb #sb { display: flex; }
+  #sb {
+    position: fixed;
+    z-index: 20;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 86%;
+    max-width: 320px;
+    transform: translateX(-100%);
+    transition: transform .2s;
+  }
+  body.sbo #sb { transform: none; }
+  body.sbo #bd { display: block; }
+  #q, #rn, #lkb input, select { font-size: 16px !important; }
+  body[data-cr=cut] #page { clip-path: none; }
+  .title-row { padding: 18px 18px 4px; }
+  #ed { padding-left: 18px; padding-right: 18px; }
+  #bar, #lkb { padding-left: 12px; padding-right: 12px; }
+  #sp {
+    position: fixed;
+    left: 8px;
+    right: 8px;
+    top: auto;
+    bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+    width: auto;
+    max-height: 72dvh;
+    box-shadow: none;
+  }
+  #top { padding: 6px 10px; }
+  #st > span:nth-child(2) { display: none; }
+}
+@media(prefers-reduced-motion: reduce) { * { transition: none !important; } }
+@page { margin: 18mm; }
+@media print {
+  :root { --text: #111; --page: #fff; --line: #0003; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { overflow: visible; height: auto; background: #fff; }
+  #bg, #veil, #crt, #bd, #sb, #top, #bar, #lkb, #st, #sp, .title-row, .modal-wrap, #auth-gate { display: none !important; }
+  #app, #main, #stage, #page, #edw { display: block; height: auto; overflow: visible; clip-path: none !important; background: #fff; border: 0; box-shadow: none; }
+  #ptitle { display: block; font: 800 30px var(--serif); margin: 0 0 12px; color: #000; }
+  #ed { padding: 0; color: #111; }
+  .shp.selx { outline: 0; }
 }
 </style>
 </head>
-<body data-font="sans" data-hs="bracket" data-cr="cut" data-hm="none" data-bm="none" data-crt="on">
+<body data-font="sans" data-hs="bracket" data-cr="cut" data-hm="hex" data-bm="arrow" class="crt-on">
 <div id="bg"></div>
 <div id="veil"></div>
-<div id="crt-overlay"></div>
+<div id="crt"></div>
 <div id="bd"></div>
 
-<!-- Login Screen Gate -->
-<div id="login-modal" hidden>
-  <div id="login-box">
-    <h2>NERV // MAGI SECURITY</h2>
-    <p>CENTRAL DOGMA DIRECTORY ACCESS</p>
-    <div id="saved-users-list" class="saved-users"></div>
-    <form id="login-form">
-      <input type="text" id="l-user" placeholder="Operative Designation (e.g. Ikari G.)" required>
-      <input type="password" id="l-pass" placeholder="Access Clearance PIN" required>
-      <button type="submit">AUTHORIZE LOGIN</button>
-    </form>
+<!-- NERV / CASPER-03 AUTHENTICATION GATE -->
+<div id="auth-gate" hidden>
+  <div class="auth-box">
+    <div class="hz"></div>
+    <div class="auth-inner">
+      <span class="auth-warn">RESTRICTED // CENTRAL DOGMA TERMINAL</span>
+      <h1 class="auth-title">CASPER-03 ARCHIVE</h1>
+      <div class="auth-sub">特務機関NERV // MAGI SECURITY VERIFICATION</div>
+      <div class="magi-pillars">
+        <div class="pillar"><b>MELCHIOR-1</b>SCIENTIST // OK</div>
+        <div class="pillar"><b>BALTHASAR-2</b>MOTHER // OK</div>
+        <div class="pillar"><b>CASPER-3</b>WOMAN // ACTIVE</div>
+      </div>
+      <form id="auth-form" autocomplete="off">
+        <div class="auth-field">
+          <label for="au-user">OPERATIVE DESIGNATION (USERNAME)</label>
+          <input type="text" id="au-user" placeholder="e.g. KATSURAGI.M or IKARI.S" required>
+        </div>
+        <div class="auth-field">
+          <label for="au-pass">SECURITY CLEARANCE CODE (PASSWORD)</label>
+          <input type="password" id="au-pass" placeholder="Enter clearance code…" required>
+        </div>
+        <div class="auth-field">
+          <label for="au-lvl">CLEARANCE TIER</label>
+          <select id="au-lvl">
+            <option value="LEVEL-AAA // COMMANDER">LEVEL-AAA // COMMANDER</option>
+            <option value="LEVEL-A // TACTICAL OPS">LEVEL-A // TACTICAL OPS</option>
+            <option value="STAGE-01 // PILOT">STAGE-01 // PILOT</option>
+            <option value="SEELE // MONOLITH">SEELE // MONOLITH OVERRIDE</option>
+          </select>
+        </div>
+        <label class="auth-rem">
+          <input type="checkbox" id="au-rem" checked>
+          RETAIN CREDENTIALS IN LOCAL MAGI CORE (Auto-login & save login info)
+        </label>
+        <div id="au-msg" class="auth-msg"></div>
+        <div class="auth-actions">
+          <button type="submit" class="pri">AUTHENTICATE // ENTER</button>
+          <button type="button" id="au-guest" class="sec" title="Bypass login with Guest Operative session">EMERGENCY BYPASS</button>
+        </div>
+      </form>
+      <div class="saved-ops" id="saved-ops-wrap" hidden>
+        <div>REGISTERED OPERATIVES IN MAGI MEMORY (Click to autofill):</div>
+        <div id="saved-ops-list"></div>
+      </div>
+    </div>
   </div>
 </div>
 
+<!-- PC FOLDER SAVE / SYNC MODAL -->
+<div id="sync-modal" class="modal-wrap" hidden>
+  <div class="modal-card">
+    <div class="hz"></div>
+    <div class="modal-head">
+      <span id="sync-title">SAVE FOLDERS & ARCHIVE TO PC</span>
+      <button id="sync-close" aria-label="Close">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="color:var(--dim);margin-bottom:8px" id="sync-desc">
+        Export or synchronize your folder hierarchy and notes directly to your computer's hard drive.
+      </div>
+      <div class="sync-grid">
+        <div class="sync-opt">
+          <b>1. DIRECT PC DIRECTORY SYNC (Real Subfolders on Disk)</b>
+          <p>Choose a folder on your PC. CASPER-03 will create real subfolders matching your tree and write every note inside as clean HTML & Markdown files.</p>
+          <div style="display:flex;gap:6px;margin-top:4px">
+            <button id="act-sync-dir" class="pri" style="flex:1">Choose PC Folder & Write Files…</button>
+          </div>
+        </div>
+        <div class="sync-opt">
+          <b>2. UNIVERSAL ZIP ARCHIVE DOWNLOAD (.ZIP with Folders)</b>
+          <p>Works in all browsers and sandboxed previews. Packages your entire folder structure (or selected folder) into a structured <code>.zip</code> file with both <code>.html</code> and <code>.md</code> files.</p>
+          <div style="display:flex;gap:6px;margin-top:4px">
+            <button id="act-zip-all" class="sec" style="flex:1">Download Full Archive (.ZIP)</button>
+            <button id="act-zip-cur" style="flex:1">Download Current Folder (.ZIP)</button>
+          </div>
+        </div>
+        <div class="sync-opt">
+          <b>3. BIND CURRENT NOTE ONLY TO PC FOLDER</b>
+          <p>Automatically saves the currently open note to a local folder whenever you type.</p>
+          <button id="act-bind-note">Bind Active Note to PC Folder…</button>
+        </div>
+      </div>
+      <div id="sync-status" style="margin-top:12px;color:var(--accent2);font-size:12px;min-height:16px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- COMMAND PALETTE MODAL (Ctrl+K / Cmd+K) -->
+<div id="cmd-modal" class="modal-wrap" hidden>
+  <div class="modal-card">
+    <div class="hz"></div>
+    <div class="modal-head">
+      <span>CASPER-03 // TACTICAL COMMAND PALETTE</span>
+      <button id="cmd-close" aria-label="Close">ESC</button>
+    </div>
+    <div class="modal-body">
+      <input type="text" id="cmd-in" placeholder="Type a command or note name…" style="width:100%;font-size:14px;padding:8px 10px">
+      <div id="cmd-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APPLICATION -->
 <div id="app">
   <aside id="sb">
     <div class="hz"></div>
-    <div class="logo">CASPER-03<small>CENTRAL DOGMA // ARCHIVE</small></div>
-    <div class="sbtn">
-      <button id="nn">+ Note</button>
-      <button id="nf">+ Folder</button>
-      <button id="of" title="Import folder">Open…</button>
+    <div class="logo-wrap">
+      <span class="logo-tag">NERV // MAGI-03</span>
+      <div class="logo">
+        CASPER-03
+        <span style="font:10px var(--mono);color:var(--accent2)">v3.33</span>
+      </div>
+      <small>極秘文書 // CENTRAL DOGMA ARCHIVE</small>
     </div>
-    <input type="text" id="q" aria-label="Search notes" placeholder="Search notes (Ctrl+P)">
+    <div class="magi-tri">
+      <div class="magi-node"><b>MELCHIOR</b>1 // OK</div>
+      <div class="magi-node"><b>BALTHASAR</b>2 // OK</div>
+      <div class="magi-node"><b>CASPER</b>3 // SYNC</div>
+    </div>
+    <div class="sbtn">
+      <button id="nn" class="pri">+ Note</button>
+      <button id="nf">+ Folder</button>
+    </div>
+    <div class="sbtn-row2">
+      <button id="of" title="Import a folder of notes from your computer">Import PC Folder</button>
+      <button id="sf-pc" class="sec" title="Save all folders and notes to your PC">Save Folders to PC</button>
+    </div>
+    <div class="search-box">
+      <input type="text" id="q" aria-label="Search notes" placeholder="Filter archive…">
+      <span class="search-kbd">Ctrl+P</span>
+    </div>
     <div id="tree" role="tree" aria-label="Notes and folders"></div>
     <div class="sfoot">
-      <label class="b">BG<input type="file" id="bgf" accept="image/*" hidden></label>
-      <label class="b">Dim <input type="range" id="dim" min="0" max="95" style="width:50px;accent-color:var(--accent);vertical-align:middle"></label>
-      <button id="bk">Backup</button>
+      <label class="b">BG/GIF<input type="file" id="bgf" accept="image/*" hidden></label>
+      <label class="b">Dim <input type="range" id="dim" min="0" max="95" style="width:54px;accent-color:var(--accent);vertical-align:middle"></label>
+      <button id="bk" title="Export JSON backup">Backup</button>
       <label class="b">Restore<input type="file" id="rs" accept=".json" hidden></label>
-      <button id="logout-btn" style="color:var(--accent2);width:100%">Operative: <span id="current-user-lbl">Gendo</span></button>
     </div>
   </aside>
 
   <div id="main" role="main">
     <div id="top">
-      <button id="sbt" aria-label="Toggle sidebar">☰</button>
+      <button id="sbt" aria-label="Toggle sidebar" title="Toggle Sidebar">☰</button>
       <span id="crumb"></span>
-      <button id="pocket-btn" title="Toggle Pocket Sticky Mode" style="background:var(--accent);color:var(--onacc);border-color:var(--accent)">🗗 Pocket</button>
-      <button id="dk" title="Choose a folder on your computer for this note">Save to folder…</button>
-      <button id="dsk-folder-btn" title="Save entire folder tree to PC">💾 Save Folders to PC</button>
+      <button id="cmdb" title="Open Tactical Command Palette (Ctrl+Shift+P)">⌘ Cmd</button>
+      <button id="dk" class="sec" title="Save folders or bind note to your PC">💾 Save to PC…</button>
       <button id="stb" aria-haspopup="true">Style</button>
-      <button id="pdfb" title="Export as PDF">Export PDF</button>
+      <button id="pdfb" class="pri" title="Export as PDF">Export PDF</button>
+      <span id="op-btn" class="op-badge" title="Operative Profile / Click to Lock Terminal">
+        <span class="op-dot"></span>
+        <span id="op-name">OPERATIVE</span>
+      </span>
     </div>
 
     <div id="sp" hidden>
-      <h4>THEME</h4>
+      <h4>EVANGELION UNIT THEMES</h4>
       <div class="rowb">
-        <button class="sw" data-t="paper" aria-label="Paper theme" style="background:linear-gradient(135deg,#f4f1ea 50%,#c2410c 50%)"></button>
-        <button class="sw" data-t="nerv" aria-label="NERV theme" style="background:linear-gradient(135deg,#0d0a08 50%,#ff6a00 50%)"></button>
-        <button class="sw" data-t="unit01" aria-label="Unit-01 theme" style="background:linear-gradient(135deg,#0e0818 50%,#a855f7 50%)"></button>
-        <button class="sw" data-t="unit02" aria-label="Unit-02 theme" style="background:linear-gradient(135deg,#140707 50%,#ff3a22 50%)"></button>
-        <button class="sw" data-t="seele" aria-label="SEELE theme" style="background:linear-gradient(135deg,#020202 50%,#d4af37 50%)"></button>
+        <button class="sw" data-t="nerv" title="NERV HQ (Default)" style="background:linear-gradient(135deg,#0d0a08 50%,#ff6a00 50%)"></button>
+        <button class="sw" data-t="unit01" title="EVA UNIT-01 (Test Type)" style="background:linear-gradient(135deg,#0e0818 50%,#a855f7 50%)"></button>
+        <button class="sw" data-t="unit02" title="EVA UNIT-02 (Production)" style="background:linear-gradient(135deg,#140707 50%,#ff3a22 50%)"></button>
+        <button class="sw" data-t="seele" title="SEELE Monolith" style="background:linear-gradient(135deg,#08080a 50%,#e11d48 50%)"></button>
+        <button class="sw" data-t="paper" title="Field Report Paper" style="background:linear-gradient(135deg,#f4f1ea 50%,#c2410c 50%)"></button>
       </div>
-
-      <h4>DISPLAY</h4>
-      <label>CRT Scanlines<select id="s-crt"><option value="on">Subtle Grid On</option><option value="off">Off (Crisp)</option></select></label>
-
+      <h4>TERMINAL DISPLAY</h4>
+      <label>CRT Scanlines<input type="checkbox" id="s-crt" checked style="accent-color:var(--accent);transform:scale(1.2)"></label>
       <h4>HEADINGS</h4>
       <label>Style<select id="s-hs"><option value="plain">Plain</option><option value="bracket">Bracket bar</option><option value="block">Solid block</option><option value="slash">Slash //</option><option value="hazard">Hazard underline</option><option value="boxed">Boxed + shadow</option></select></label>
       <label>Font<select id="s-hf"><option value="serif">Mincho serif</option><option value="sans">Sans</option><option value="mono">Mono</option></select></label>
       <label>Case<select id="s-hc"><option value="normal">Normal</option><option value="upper">UPPERCASE</option></select></label>
       <label>Size<input type="range" id="s-sc" min="70" max="140"></label>
-
       <h4>SHAPE MARKERS</h4>
       <label>Before headings<select id="s-hm"><option value="none">None</option><option value="hex">Hexagon</option><option value="arrow">Arrow</option><option value="diamond">Diamond</option><option value="chevron">Chevron</option><option value="slab">Slab</option><option value="square">Square</option><option value="notch">Notch</option></select></label>
       <label>Bullet points<select id="s-bm"><option value="none">Default dot</option><option value="hex">Hexagon</option><option value="arrow">Arrow</option><option value="diamond">Diamond</option><option value="chevron">Chevron</option><option value="slab">Slab</option><option value="square">Square</option><option value="notch">Notch</option></select></label>
-
       <h4>PAGE</h4>
       <label>Text font<select id="s-bf"><option value="sans">Sans</option><option value="serif">Serif</option><option value="mono">Mono</option></select></label>
       <label>Text size<input type="range" id="s-fs" min="14" max="26"></label>
-      <label>Corners<select id="s-cr"><option value="cut">Cut (edgy)</option><option value="sharp">Square</option></select></label>
-      <label>Accent<span><input type="color" id="s-ac" value="#c2410c"> <button id="s-rs">Reset</button></span></label>
-
+      <label>Corners<select id="s-cr"><option value="cut">Cut (Tactical)</option><option value="sharp">Square</option></select></label>
+      <label>Accent<span><input type="color" id="s-ac" value="#ff6a00"> <button id="s-rs">Reset</button></span></label>
       <h4>EXPORT</h4>
-      <div class="rowb"><button id="pdf">PDF</button><button id="doc">Word (editable)</button></div>
+      <div class="rowb">
+        <button id="pdf">PDF</button>
+        <button id="doc">Word (.doc)</button>
+        <button id="md-exp">Markdown (.md)</button>
+      </div>
       <button id="spx" style="width:100%;margin-top:10px">Close</button>
     </div>
 
     <div id="stage">
       <div id="page">
-        <input type="text" id="title" aria-label="Note title" placeholder="Untitled">
+        <div class="title-row">
+          <input type="text" id="title" aria-label="Note title" placeholder="Untitled Directive">
+          <button id="pinb" title="Pin / Star directive to top of folder">★</button>
+        </div>
         <div id="bar">
           <select id="blk" aria-label="Text style">
             <option value="p">Text</option>
@@ -298,588 +1059,927 @@ body:not([data-bm=none]) #ed ul:not(.todo)>li::before{content:"";position:absolu
             <option value="h2">Heading 2</option>
             <option value="h3">Heading 3</option>
             <option value="blockquote">Quote</option>
-          </select>
-          <i></i>
+            <option value="pre">Code Block</option>
+          </select><i></i>
           <span id="tb" style="display:contents"></span>
           <span id="shg">
             <button id="sm" aria-label="Smaller">−</button>
             <button id="sl" aria-label="Larger">+</button>
-            <input type="color" id="shc" value="#c2410c" aria-label="Shape color">
+            <input type="color" id="shc" value="#ff6a00" aria-label="Shape color">
             <button id="sd">Delete</button>
           </span>
         </div>
         <div id="lkb" hidden>
-          <input type="text" id="lki" placeholder="Paste a link, then press Enter">
-          <button id="lka">Apply</button>
+          <input type="text" id="lki" placeholder="Paste a URL or [[Note Title]], then press Enter">
+          <button id="lka" class="pri">Apply</button>
         </div>
         <div id="edw">
           <div id="ptitle"></div>
-          <div id="ed" contenteditable="true" spellcheck="true" role="textbox" aria-multiline="true" aria-label="Note" data-ph="Start writing… try typing # then space for a heading"></div>
+          <div id="ed" contenteditable="true" spellcheck="true" role="textbox" aria-multiline="true" aria-label="Note" data-ph="Begin tactical log entry… type # + space for a heading, or [[Note]] to cross-link"></div>
         </div>
       </div>
-      <div id="empty" hidden>No note open.<br><br><button id="nn2">+ New note</button></div>
+      <div id="empty" hidden>
+        <div style="color:var(--accent);font-size:16px;margin-bottom:8px">// NO ACTIVE DIRECTIVE SELECTED //</div>
+        Select a file from the Central Dogma directory or initialize a new entry.<br><br>
+        <button id="nn2" class="pri">+ Initialize Directive</button>
+      </div>
     </div>
 
     <div id="st">
       <span>WORDS <b id="wc">0</b></span>
       <span>READ <b id="rt">0</b> MIN</span>
+      <span>SYNC <b id="sync-rate">99.8%</b></span>
       <span style="flex:1"></span>
       <span id="dsk"></span>
-      <span id="sv">SAVED</span>
+      <span id="clock"></span>
+      <span id="sv">MAGI // SAVED</span>
     </div>
   </div>
 </div>
 
 <script>
-const $=s=>document.querySelector(s), ed=$('#ed'), ti=$('#title');
-const st={
-  get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},
-  set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}
+const $ = s => document.querySelector(s), ed = $('#ed'), ti = $('#title');
+const st = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } }
 };
-const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const uid=()=>'i'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
-const md=t=>{try{return marked.parse(t)}catch(e){return '<p>'+esc(t).replace(/\n/g,'<br>')+'</p>'}};
-const clean=h=>{
-  const d=new DOMParser().parseFromString(h,'text/html');
-  d.querySelectorAll('script,iframe,object,embed,link,style,meta,title').forEach(x=>x.remove());
-  d.body.querySelectorAll('*').forEach(e=>[...e.attributes].forEach(a=>{
-    if(/^on/i.test(a.name)||/^\s*javascript:/i.test(a.value))e.removeAttribute(a.name)
+const esc = s => (s || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const uid = () => 'i' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+const md = t => { try { return marked.parse(t); } catch (e) { return '<p>' + esc(t).replace(/\n/g, '<br>') + '</p>'; } };
+const clean = h => {
+  const d = new DOMParser().parseFromString(h, 'text/html');
+  d.querySelectorAll('script,iframe,object,embed,link,style,meta,title').forEach(x => x.remove());
+  d.body.querySelectorAll('*').forEach(e => [...e.attributes].forEach(a => {
+    if (/^on/i.test(a.name) || /^\s*javascript:/i.test(a.value)) e.removeAttribute(a.name);
   }));
   return d.body.innerHTML;
 };
 
-// ---- Login Authentication System ----
-let currentOperative=st.get('casper-cur-user',null);
-function checkLogin(){
-  const users=st.get('casper-users',{});
-  if(!currentOperative || !users[currentOperative]){
-    $('#login-modal').hidden=false;
-    renderSavedUsers();
-  } else {
-    $('#login-modal').hidden=true;
-    $('#current-user-lbl').textContent=currentOperative;
-  }
-}
-function renderSavedUsers(){
-  const users=st.get('casper-users',{});
-  const keys=Object.keys(users);
-  const list=$('#saved-users-list');
-  if(!keys.length){
-    list.innerHTML='<span style="font-size:10px;color:var(--dim)">No saved operatives. Create one below.</span>';
-    return;
-  }
-  list.innerHTML=keys.map(u=>`<span class="saved-user-chip" data-user="${esc(u)}">${esc(u)}</span>`).join('');
-  list.querySelectorAll('.saved-user-chip').forEach(c=>c.onclick=()=>{
-    $('#l-user').value=c.dataset.user;
-    $('#l-pass').value=users[c.dataset.user];
-  });
-}
-$('#login-form').onsubmit=e=>{
-  e.preventDefault();
-  const u=$('#l-user').value.trim(), p=$('#l-pass').value.trim();
-  if(!u||!p)return;
-  let users=st.get('casper-users',{});
-  users[u]=p;
-  st.set('casper-users',users);
-  currentOperative=u;
-  st.set('casper-cur-user',u);
-  $('#login-modal').hidden=true;
-  $('#current-user-lbl').textContent=u;
-};
-$('#logout-btn').onclick=()=>{
-  currentOperative=null;
-  st.set('casper-cur-user',null);
-  checkLogin();
-};
-checkLogin();
+// ---- Default Evangelion Seed Content ----
+const welcome = `<h2>CASPER-03 // CENTRAL DOGMA ARCHIVE</h2>
+<p>Welcome to the revamped <b>CASPER-03 Tactical Archive Terminal</b>. Your notes and folders are stored locally and can be synchronized or exported directly to your PC.</p>
+<ul>
+  <li><b>Save Folders to PC:</b> Click <b>Save Folders to PC</b> in the sidebar (or the <b>💾</b> icon on any folder row) to write your entire folder hierarchy to a real folder on your computer, or download a complete <code>.zip</code> archive of all folders.</li>
+  <li><b>Operative Login & Memory:</b> Click your Operative badge in the top-right to lock the terminal or switch profiles. Credentials are saved in local MAGI memory.</li>
+  <li><b>Markdown Shortcuts:</b> Type <b># </b>, <b>## </b>, <b>- </b>, <b>1. </b>, <b>&gt; </b> or <b>[] </b> at the start of a line.</li>
+  <li><b>Tactical Shapes & Themes:</b> Use the <b>▲ Shape</b> selector in the toolbar or open <b>Style</b> to switch between <b>NERV</b>, <b>UNIT-01</b>, <b>UNIT-02</b>, <b>SEELE</b>, and <b>Paper</b> themes.</li>
+</ul>
+<div class="box"><b>MAGI SYSTEM ADVISORY // DIRECTIVE 707</b><br>All folders and subfolders can be mirrored to your local drive at any time via Direct Directory Sync or ZIP Archive.</div>`;
 
-const welcome='<h2>CASPER-03 Initialized</h2><p>Central Dogma tactical terminal active. All subfolder trees and personal records encrypted under local security protocols.</p><ul><li>Use the sidebar or click <b>Save Folders to PC</b> to sync full multi-level directories directly to your hard drive.</li><li>Click <b>🗗 Pocket</b> to shrink the app into a compact always-on-top note widget.</li></ul><div class="box"><b>Security Notice</b><br>Operative sessions persist locally. Use Backup in sidebar to export all notes.</div>';
-const seed=[
-  {id:'f1',type:'folder',parent:null,name:'Research',open:true},
-  {id:'f2',type:'folder',parent:null,name:'MAGI Logs',open:false},
-  {id:'n1',type:'note',parent:'f1',name:'Welcome',html:welcome},
-  {id:'n2',type:'note',parent:null,name:'Ideas',html:'<p>Loose tactical ideas go here.</p>'}
+const seed = [
+  { id: 'f1', type: 'folder', parent: null, name: '01_CENTRAL_DOGMA', open: true },
+  { id: 'f2', type: 'folder', parent: null, name: '02_PROJECT_E_LOGS', open: true },
+  { id: 'f3', type: 'folder', parent: 'f2', name: 'SYNC_TESTS', open: true },
+  { id: 'n1', type: 'note', parent: 'f1', name: 'CASPER-03 System Manual', pinned: true, html: welcome },
+  { id: 'n2', type: 'note', parent: 'f3', name: 'Unit-01 Activation Log', pinned: false, html: '<h3>TEST TYPE EVA-01 // ACTIVATION</h3><p>Pilot harmonic sync rate nominal at <b>99.8%</b>. All three MAGI supercomputers (Melchior, Balthasar, Casper) concur.</p><ul class="todo"><li><input type="checkbox" checked> Initialize LCL oxygenation</li><li><input type="checkbox"> Verify A.T. Field phase threshold</li></ul>' }
 ];
-let items=st.get('mn2',seed), cur=st.get('mn2-cur','n1'), selF=null, ren=null, arm=null, dragId=null;
 
-const mig=()=>items.forEach(i=>{
-  if(i.type=='note'&&i.html==null){
-    i.html=clean(md((i.text||'').replace(/\[\[([^\]]+)\]\]/g,(m,x)=>'['+x+'](#wiki:'+encodeURIComponent(x)+')')));
+let items = st.get('mn2', seed), cur = st.get('mn2-cur', 'n1'), selF = null, ren = null, arm = null, dragId = null, syncFolderTarget = null;
+const mig = () => items.forEach(i => {
+  if (i.type == 'note' && i.html == null) {
+    i.html = clean(md((i.text || '').replace(/\[\[([^\]]+)\]\]/g, (m, x) => '[' + x + '](#wiki:' + encodeURIComponent(x) + ')')));
     delete i.text;
   }
 });
 mig();
 
-const it=id=>items.find(i=>i.id===id);
-const note=()=>{const n=it(cur);return n&&n.type=='note'?n:null};
-const kids=p=>items.filter(i=>i.parent===p).sort((a,b)=>a.type==b.type?a.name.localeCompare(b.name):a.type=='folder'?-1:1);
-
-function save(){
-  $('#sv').textContent=st.set('mn2',items)&&st.set('mn2-cur',cur)?'SAVED':'STORAGE FULL';
-}
-function path(n){
-  const p=[];let c=n;
-  while(c){p.unshift(c.name||'Untitled');c=c.parent?it(c.parent):null}
-  return p;
-}
-const plain=h=>{const d=document.createElement('div');d.innerHTML=h;return d.textContent.toLowerCase()};
-
-// ---- tree ----
-function tree(){
-  const q=$('#q').value.trim().toLowerCase(), box=$('#tree');let h='';
-  if(q){
-    const m=items.filter(i=>i.type=='note'&&(i.name.toLowerCase().includes(q)||plain(i.html).includes(q)));
-    h=m.map(n=>`<div class="row ${n.id==cur?'on':''}" data-id="${n.id}" tabindex="0" role="treeitem"><span class="ic">▫</span><span class="nm">${esc(n.name||'Untitled')}</span></div><div class="sub">${esc(path(it(n.parent)||{name:'/'}).join(' / '))}</div>`).join('')||'<div class="sub">No matches</div>';
-  } else {
-    const walk=(p,d)=>kids(p).forEach(i=>{
-      const f=i.type=='folder', nm=ren==i.id?`<input type="text" id="rn" value="${esc(i.name)}">`:`<span class="nm">${esc(i.name||'Untitled')}</span>`;
-      h+=`<div class="row ${i.id==cur?'on':''} ${i.id==selF?'sel':''}" data-id="${i.id}" draggable="true" tabindex="0" role="treeitem"${f?' aria-expanded="'+(!!i.open)+'"':''} style="padding-left:${8+d*16}px"><span class="ic">${f?(i.open?'▾':'▸'):'▫'}</span>${nm}<span class="ac">${f?'<span data-a="nn" title="New note here">+</span><span data-a="nf" title="New subfolder">▣</span><span data-a="sf" title="Save folder to PC">💾</span>':''}<span data-a="rn" title="Rename">✎</span><span data-a="dl" class="${arm==i.id?'arm':''}" title="Delete">${arm==i.id?'sure?':'×'}</span></span></div>`;
-      if(f&&i.open)walk(i.id,d+1);
-    });
-    walk(null,0);
-    if(!items.length)h='<div class="sub">Empty. Create a note or folder.</div>';
-  }
-  const fe=document.activeElement, fr=fe&&fe.closest?fe.closest('#tree .row'):null, fid=fr?fr.dataset.id:null;
-  box.innerHTML=h;
-  const r=$('#rn');
-  if(r){r.focus();r.select()}else if(fid){const x=box.querySelector('.row[data-id="'+fid+'"]');if(x)x.focus()}
-}
-
-function add(type,parent){
-  const i={id:uid(),type,parent,name:type=='folder'?'New folder':'Untitled'};
-  if(type=='note')i.html='';else i.open=true;
-  items.push(i);
-  const p=it(parent);if(p)p.open=true;
-  if(type=='note'){cur=i.id;selF=parent;openNote();save();tree();ti.focus();return}
-  ren=i.id;save();tree();
-}
-
-const target=()=>{const n=note();return selF!==null&&it(selF)?selF:(n?n.parent:null)};
-
-function del(id){
-  const rm=new Set([id]);let ch=true;
-  while(ch){ch=false;items.forEach(i=>{if(!rm.has(i.id)&&rm.has(i.parent)){rm.add(i.id);ch=true}})}
-  items=items.filter(i=>!rm.has(i.id));
-  if(rm.has(cur)){const n=items.find(i=>i.type=='note');cur=n?n.id:null}
-  if(rm.has(selF))selF=null;
-  save();openNote();tree();
-}
-
-$('#tree').onclick=e=>{
-  const row=e.target.closest('.row');if(!row||e.target.id=='rn')return;
-  const id=row.dataset.id, i=it(id), a=e.target.dataset.a;
-  if(a=='nn')add('note',id);
-  else if(a=='nf')add('folder',id);
-  else if(a=='sf')saveFolderToPC(id);
-  else if(a=='rn'){ren=id;tree()}
-  else if(a=='dl'){
-    if(arm==id){arm=null;del(id)}
-    else{arm=id;tree();setTimeout(()=>{if(arm==id){arm=null;tree()}},3000)}
-  }
-  else if(i.type=='folder'){i.open=!i.open;selF=id;save();tree()}
-  else{cur=id;selF=i.parent;openNote();save();tree();if(innerWidth<=800)document.body.classList.remove('sbo')}
-};
-
-function commit(){
-  const r=$('#rn');if(!r||!ren)return;
-  const i=it(ren);if(i){i.name=r.value.trim()||i.name;if(i.id==cur)ti.value=i.name}
-  ren=null;save();tree();crumb();
-}
-
-$('#tree').ondblclick=e=>{const row=e.target.closest('.row');if(row&&!e.target.dataset.a){ren=row.dataset.id;tree()}};
-$('#tree').ondragstart=e=>{const r=e.target.closest('.row');if(r)dragId=r.dataset.id};
-$('#tree').ondragover=e=>{e.preventDefault();document.querySelectorAll('.dr').forEach(x=>x.classList.remove('dr'));const r=e.target.closest('.row');if(r)r.classList.add('dr')};
-$('#tree').ondrop=e=>{
-  e.preventDefault();
-  const r=e.target.closest('.row'), t=r?it(r.dataset.id):null, np=t?(t.type=='folder'?t.id:t.parent):null, d=it(dragId);
-  if(!d||np===d.id){tree();return}
-  let c=np;while(c){if(c===d.id){tree();return}c=it(c)?it(c).parent:null}
-  d.parent=np;if(it(np))it(np).open=true;
-  save();tree();crumb();
-};
-$('#q').oninput=tree;
-$('#nn').onclick=()=>add('note',target());
-$('#nn2').onclick=()=>add('note',target());
-$('#nf').onclick=()=>add('folder',target());
-
-// ---- editor ----
-let saved=null, selShape=null;
-const html=()=>ed.innerHTML.replace(/ selx/g,'');
-function stats(){const w=(ed.innerText.trim().match(/\S+/g)||[]).length;$('#wc').textContent=w;$('#rt').textContent=Math.max(1,Math.round(w/220))}
-function crumb(){
-  const n=note();
-  $('#crumb').innerHTML=n?path(n).map((x,i,a)=>i==a.length-1?'<b>'+esc(x)+'</b>':esc(x)).join(' / '):'';
-  $('#ptitle').textContent=n?n.name:'';
-}
-function openNote(){
-  const n=note();
-  $('#page').hidden=!n;$('#empty').hidden=!!n;
-  selShape=null;shg();
-  if(n){ti.value=n.name;ed.innerHTML=n.html||'';stats()}
-  else{ti.value='';ed.innerHTML='';stats()}
-  crumb();diskStatus();
-}
-function sync(){
-  if(['<br>','<p><br></p>','<div><br></div>'].includes(ed.innerHTML))ed.innerHTML='';
-  const n=note();if(n){n.html=html();save();diskQ(n)}
-  stats();
-}
-ed.addEventListener('input',sync);
-ed.addEventListener('change',e=>{if(e.target.type=='checkbox'){e.target.toggleAttribute('checked',e.target.checked);sync()}});
-ed.addEventListener('paste',e=>{e.preventDefault();document.execCommand('insertText',false,e.clipboardData.getData('text/plain'))});
-ti.oninput=()=>{const n=note();if(n){n.name=ti.value;save();tree();crumb()}};
-ti.onkeydown=e=>{if(e.key=='Enter'){e.preventDefault();ed.focus()}};
-document.execCommand('defaultParagraphSeparator',false,'p');
-
-document.addEventListener('selectionchange',()=>{
-  const s=getSelection();
-  if(s.rangeCount&&ed.contains(s.anchorNode)){
-    saved=s.getRangeAt(0).cloneRange();
-    try{
-      const v=(document.queryCommandValue('formatBlock')||'p').toLowerCase().replace(/[<>]/g,'');
-      $('#blk').value=['h1','h2','h3','blockquote'].includes(v)?v:'p';
-    }catch(e){}
-  }
+const it = id => items.find(i => i.id === id);
+const note = () => { const n = it(cur); return n && n.type == 'note' ? n : null; };
+const kids = p => items.filter(i => i.parent === p).sort((a, b) => {
+  if (a.type != b.type) return a.type == 'folder' ? -1 : 1;
+  if (!!a.pinned != !!b.pinned) return a.pinned ? -1 : 1;
+  return (a.name || '').localeCompare(b.name || '');
 });
 
-const cmd=(c,v)=>{ed.focus();document.execCommand(c,false,v);sync()};
-const ins=h=>{ed.focus();document.execCommand('insertHTML',false,h);sync()};
-$('#blk').onchange=()=>{
-  if(saved){ed.focus();const s=getSelection();s.removeAllRanges();s.addRange(saved)}
-  cmd('formatBlock','<'+$('#blk').value+'>');
+function save() {
+  $('#sv').textContent = st.set('mn2', items) && st.set('mn2-cur', cur) ? 'MAGI // SAVED' : 'STORAGE FULL';
+}
+function path(n) {
+  const p = []; let c = n;
+  while (c) { p.unshift(c.name || 'Untitled'); c = c.parent ? it(c.parent) : null; }
+  return p;
+}
+const plain = h => { const d = document.createElement('div'); d.innerHTML = h; return d.textContent.toLowerCase(); };
+
+// ---- AUTHENTICATION / LOGIN SYSTEM ----
+let accounts = st.get('casper-accounts', []);
+let session = st.get('casper-session', null);
+
+function renderSavedOps() {
+  const wrap = $('#saved-ops-wrap'), list = $('#saved-ops-list');
+  if (!accounts.length) { wrap.hidden = true; return; }
+  wrap.hidden = false;
+  list.innerHTML = accounts.map(a =>
+    `<span class="op-chip" data-u="${esc(a.user)}">● ${esc(a.user)} <small style="opacity:.6">(${esc(a.level.split(' ')[0])})</small></span>`
+  ).join('');
+  list.querySelectorAll('.op-chip').forEach(chip => {
+    chip.onclick = () => {
+      const acc = accounts.find(x => x.user === chip.dataset.u);
+      if (acc) {
+        $('#au-user').value = acc.user;
+        $('#au-pass').value = acc.pass || '';
+        $('#au-lvl').value = acc.level || 'LEVEL-AAA // COMMANDER';
+        $('#au-msg').textContent = 'CREDENTIALS RECALLED FROM MAGI CORE';
+        $('#au-msg').className = 'auth-msg ok';
+      }
+    };
+  });
+}
+
+function updateOperativeUI() {
+  if (session && session.user) {
+    $('#op-name').textContent = `${session.user.toUpperCase()} [${(session.level || 'OPS').split(' ')[0]}]`;
+    $('#auth-gate').hidden = true;
+  } else {
+    $('#auth-gate').hidden = false;
+    renderSavedOps();
+    if (accounts.length) {
+      const last = accounts[accounts.length - 1];
+      $('#au-user').value = last.user;
+      if (last.remember) $('#au-pass').value = last.pass;
+      $('#au-lvl').value = last.level || 'LEVEL-AAA // COMMANDER';
+    }
+  }
+}
+
+$('#auth-form').onsubmit = e => {
+  e.preventDefault();
+  const user = $('#au-user').value.trim();
+  const pass = $('#au-pass').value;
+  const level = $('#au-lvl').value;
+  const remember = $('#au-rem').checked;
+  if (!user || !pass) return;
+
+  const existing = accounts.find(a => a.user.toLowerCase() === user.toLowerCase());
+  if (existing && existing.pass !== pass) {
+    // Update password or inform operative
+    existing.pass = pass;
+    existing.level = level;
+    existing.remember = remember;
+  } else if (!existing) {
+    accounts.push({ user, pass, level, remember, created: Date.now() });
+  } else {
+    existing.level = level;
+    existing.remember = remember;
+  }
+  st.set('casper-accounts', accounts);
+  session = { user, level, remember, active: true };
+  if (remember) st.set('casper-session', session);
+  else localStorage.removeItem('casper-session');
+
+  $('#au-msg').textContent = 'MAGI VOTE UNANIMOUS // ACCESS GRANTED';
+  $('#au-msg').className = 'auth-msg ok';
+  updateOperativeUI();
 };
 
-const cell='<td><br></td>', tbl='<table><tbody>'+('<tr>'+cell.repeat(3)+'</tr>').repeat(3)+'</tbody></table><p><br></p>';
-function openLink(){$('#lkb').hidden=false;$('#lki').focus()}
-function applyLink(){
-  let u=$('#lki').value.trim();
-  if(u){
-    if(!/^(https?:|mailto:|#)/i.test(u))u='https://'+u;
-    if(saved){ed.focus();const s=getSelection();s.removeAllRanges();s.addRange(saved)}
-    cmd('createLink',u);
+$('#au-guest').onclick = () => {
+  session = { user: 'GUEST-OP', level: 'STAGE-01 // PILOT', remember: false };
+  updateOperativeUI();
+};
+
+$('#op-btn').onclick = () => {
+  session = null;
+  localStorage.removeItem('casper-session');
+  $('#au-msg').textContent = 'TERMINAL LOCKED BY OPERATIVE';
+  $('#au-msg').className = 'auth-msg';
+  updateOperativeUI();
+};
+
+updateOperativeUI();
+
+// ---- DIRECTORY TREE ----
+function tree() {
+  const q = $('#q').value.trim().toLowerCase(), box = $('#tree');
+  let h = '';
+  if (q) {
+    const m = items.filter(i => i.type == 'note' && ((i.name || '').toLowerCase().includes(q) || plain(i.html).includes(q)));
+    h = m.map(n => `<div class="row ${n.id == cur ? 'on' : ''}" data-id="${n.id}" tabindex="0" role="treeitem"><span class="ic">▫</span>${n.pinned ? '<span class="pin-ic">★</span>' : ''}<span class="nm">${esc(n.name || 'Untitled')}</span></div><div class="sub">${esc(path(it(n.parent) || { name: 'ROOT' }).join(' / '))}</div>`).join('') || '<div class="sub">No matching directives in archive</div>';
+  } else {
+    const walk = (p, d) => kids(p).forEach(i => {
+      const f = i.type == 'folder';
+      const nm = ren == i.id ? `<input type="text" id="rn" value="${esc(i.name)}">` : `<span class="nm">${esc(i.name || 'Untitled')}</span>`;
+      h += `<div class="row ${i.id == cur ? 'on' : ''} ${i.id == selF ? 'sel' : ''}" data-id="${i.id}" draggable="true" tabindex="0" role="treeitem"${f ? ' aria-expanded="' + (!!i.open) + '"' : ''} style="padding-left:${8 + d * 16}px">
+        <span class="ic">${f ? (i.open ? '▾' : '▸') : '▫'}</span>
+        ${!f && i.pinned ? '<span class="pin-ic" title="Pinned">★</span>' : ''}
+        ${nm}
+        <span class="ac">
+          ${f ? '<span data-a="nn" title="New note inside folder">+</span><span data-a="nf" title="New subfolder">▣</span><span data-a="sf" title="Save this folder to PC">💾</span>' : '<span data-a="pin" title="Pin/Unpin note">★</span>'}
+          <span data-a="rn" title="Rename (F2)">✎</span>
+          <span data-a="dl" class="${arm == i.id ? 'arm' : ''}" title="Delete">${arm == i.id ? 'sure?' : '×'}</span>
+        </span>
+      </div>`;
+      if (f && i.open) walk(i.id, d + 1);
+    });
+    walk(null, 0);
+    if (!items.length) h = '<div class="sub">Archive empty. Initialize a note or folder.</div>';
   }
-  $('#lki').value='';$('#lkb').hidden=true;ed.focus();
+  const fe = document.activeElement, fr = fe && fe.closest ? fe.closest('#tree .row') : null, fid = fr ? fr.dataset.id : null;
+  box.innerHTML = h;
+  const r = $('#rn');
+  if (r) { r.focus(); r.select(); }
+  else if (fid) { const x = box.querySelector('.row[data-id="' + fid + '"]'); if (x) x.focus(); }
 }
-$('#lka').onclick=applyLink;
-$('#lki').onkeydown=e=>{if(e.key=='Enter')applyLink();if(e.key=='Escape'){$('#lkb').hidden=true;ed.focus()}};
+
+function add(type, parent) {
+  const i = { id: uid(), type, parent, name: type == 'folder' ? 'NEW_FOLDER' : 'Untitled Directive' };
+  if (type == 'note') { i.html = ''; i.pinned = false; } else i.open = true;
+  items.push(i);
+  const p = it(parent); if (p) p.open = true;
+  if (type == 'note') { cur = i.id; selF = parent; openNote(); save(); tree(); ti.focus(); ti.select(); return; }
+  ren = i.id; save(); tree();
+}
+const target = () => { const n = note(); return selF !== null && it(selF) ? selF : (n ? n.parent : null); };
+
+function del(id) {
+  const rm = new Set([id]); let ch = true;
+  while (ch) { ch = false; items.forEach(i => { if (!rm.has(i.id) && rm.has(i.parent)) { rm.add(i.id); ch = true; } }); }
+  items = items.filter(i => !rm.has(i.id));
+  if (rm.has(cur)) { const n = items.find(i => i.type == 'note'); cur = n ? n.id : null; }
+  if (rm.has(selF)) selF = null;
+  save(); openNote(); tree();
+}
+
+$('#tree').onclick = e => {
+  const row = e.target.closest('.row');
+  if (!row || e.target.id == 'rn') return;
+  const id = row.dataset.id, i = it(id), a = e.target.dataset.a;
+  if (a == 'nn') add('note', id);
+  else if (a == 'nf') add('folder', id);
+  else if (a == 'sf') openSyncModal(id);
+  else if (a == 'pin') { i.pinned = !i.pinned; save(); tree(); openNote(); }
+  else if (a == 'rn') { ren = id; tree(); }
+  else if (a == 'dl') {
+    if (arm == id) { arm = null; del(id); }
+    else { arm = id; tree(); setTimeout(() => { if (arm == id) { arm = null; tree(); } }, 3000); }
+  }
+  else if (i.type == 'folder') { i.open = !i.open; selF = id; save(); tree(); }
+  else {
+    cur = id; selF = i.parent; openNote(); save(); tree();
+    if (innerWidth <= 820) document.body.classList.remove('sbo');
+  }
+};
+
+function commit() {
+  const r = $('#rn'); if (!r || !ren) return;
+  const i = it(ren);
+  if (i) { i.name = r.value.trim() || i.name; if (i.id == cur) ti.value = i.name; }
+  ren = null; save(); tree(); crumb();
+}
+$('#tree').addEventListener('keydown', e => {
+  if (e.target.id == 'rn') {
+    if (e.key == 'Enter') commit();
+    if (e.key == 'Escape') { ren = null; tree(); }
+    return;
+  }
+  const row = e.target.closest('.row'); if (!row) return;
+  if (e.key == 'Enter' || e.key == ' ') { e.preventDefault(); row.click(); }
+  else if (e.key == 'F2') { ren = row.dataset.id; tree(); }
+  else if (e.key == 'ArrowDown' || e.key == 'ArrowUp') {
+    e.preventDefault();
+    const rs = [...document.querySelectorAll('#tree .row')], n = rs[rs.indexOf(row) + (e.key == 'ArrowDown' ? 1 : -1)];
+    if (n) n.focus();
+  }
+});
+$('#tree').addEventListener('focusout', e => { if (e.target.id == 'rn') setTimeout(commit, 0); });
+$('#tree').ondblclick = e => { const row = e.target.closest('.row'); if (row && !e.target.dataset.a) { ren = row.dataset.id; tree(); } };
+$('#tree').ondragstart = e => { const r = e.target.closest('.row'); if (r) dragId = r.dataset.id; };
+$('#tree').ondragover = e => {
+  e.preventDefault();
+  document.querySelectorAll('.dr').forEach(x => x.classList.remove('dr'));
+  const r = e.target.closest('.row'); if (r) r.classList.add('dr');
+};
+$('#tree').ondrop = e => {
+  e.preventDefault();
+  document.querySelectorAll('.dr').forEach(x => x.classList.remove('dr'));
+  const r = e.target.closest('.row'), t = r ? it(r.dataset.id) : null, np = t ? (t.type == 'folder' ? t.id : t.parent) : null, d = it(dragId);
+  if (!d || np === d.id) { tree(); return; }
+  let c = np;
+  while (c) { if (c === d.id) { tree(); return; } c = it(c) ? it(c).parent : null; }
+  d.parent = np; if (it(np)) it(np).open = true;
+  save(); tree(); crumb();
+};
+$('#q').oninput = tree;
+$('#nn').onclick = () => add('note', target());
+$('#nn2').onclick = () => add('note', target());
+$('#nf').onclick = () => add('folder', target());
+
+// ---- EDITOR ----
+let saved = null, selShape = null;
+const html = () => ed.innerHTML.replace(/ selx/g, '');
+function stats() {
+  const w = (ed.innerText.trim().match(/\S+/g) || []).length;
+  $('#wc').textContent = w;
+  $('#rt').textContent = Math.max(1, Math.round(w / 220));
+}
+function crumb() {
+  const n = note();
+  $('#crumb').innerHTML = n ? path(n).map((x, i, a) => i == a.length - 1 ? '<b>' + esc(x) + '</b>' : esc(x)).join(' // ') : 'CENTRAL DOGMA // STANDBY';
+  $('#ptitle').textContent = n ? n.name : '';
+}
+function openNote() {
+  const n = note();
+  $('#page').hidden = !n;
+  $('#empty').hidden = !!n;
+  selShape = null; shg();
+  if (n) {
+    ti.value = n.name;
+    ed.innerHTML = n.html || '';
+    $('#pinb').classList.toggle('on', !!n.pinned);
+    stats();
+  } else {
+    ti.value = ''; ed.innerHTML = ''; stats();
+  }
+  crumb(); diskStatus();
+}
+function sync() {
+  if (['<br>', '<p><br></p>', '<div><br></div>'].includes(ed.innerHTML)) ed.innerHTML = '';
+  const n = note();
+  if (n) {
+    // Convert [[WikiLinks]] typed inline into links on the fly if needed
+    n.html = html();
+    save();
+    diskQ(n);
+  }
+  stats();
+}
+ed.addEventListener('input', sync);
+ed.addEventListener('change', e => {
+  if (e.target.type == 'checkbox') { e.target.toggleAttribute('checked', e.target.checked); sync(); }
+});
+ed.addEventListener('paste', e => {
+  e.preventDefault();
+  document.execCommand('insertText', false, e.clipboardData.getData('text/plain'));
+});
+ti.oninput = () => {
+  const n = note();
+  if (n) { n.name = ti.value; save(); tree(); crumb(); }
+};
+ti.onkeydown = e => { if (e.key == 'Enter') { e.preventDefault(); ed.focus(); } };
+$('#pinb').onclick = () => {
+  const n = note();
+  if (n) { n.pinned = !n.pinned; $('#pinb').classList.toggle('on', !!n.pinned); save(); tree(); }
+};
+
+document.execCommand('defaultParagraphSeparator', false, 'p');
+document.addEventListener('selectionchange', () => {
+  const s = getSelection();
+  if (s.rangeCount && ed.contains(s.anchorNode)) {
+    saved = s.getRangeAt(0).cloneRange();
+    try {
+      const v = (document.queryCommandValue('formatBlock') || 'p').toLowerCase().replace(/[<>]/g, '');
+      $('#blk').value = ['h1', 'h2', 'h3', 'blockquote', 'pre'].includes(v) ? v : 'p';
+    } catch (e) {}
+  }
+});
+const cmd = (c, v) => { ed.focus(); document.execCommand(c, false, v); sync(); };
+const ins = h => { ed.focus(); document.execCommand('insertHTML', false, h); sync(); };
+$('#blk').onchange = () => {
+  if (saved) { ed.focus(); const s = getSelection(); s.removeAllRanges(); s.addRange(saved); }
+  cmd('formatBlock', '<' + $('#blk').value + '>');
+};
+
+const cell = '<td><br></td>', tbl = '<table><tbody>' + ('<tr>' + cell.repeat(3) + '</tr>').repeat(3) + '</tbody></table><p><br></p>';
+function openLink() { $('#lkb').hidden = false; $('#lki').focus(); }
+function applyLink() {
+  let u = $('#lki').value.trim();
+  if (u) {
+    if (/^\[\[([^\]]+)\]\]$/.test(u)) {
+      const targetName = u.slice(2, -2);
+      u = '#wiki:' + encodeURIComponent(targetName);
+    } else if (!/^(https?:|mailto:|#)/i.test(u)) {
+      u = 'https://' + u;
+    }
+    if (saved) { ed.focus(); const s = getSelection(); s.removeAllRanges(); s.addRange(saved); }
+    cmd('createLink', u);
+  }
+  $('#lki').value = ''; $('#lkb').hidden = true; ed.focus();
+}
+$('#lka').onclick = applyLink;
+$('#lki').onkeydown = e => {
+  if (e.key == 'Enter') applyLink();
+  if (e.key == 'Escape') { $('#lkb').hidden = true; ed.focus(); }
+};
 
 [
-  ['↶','Undo',()=>cmd('undo')],['↷','Redo',()=>cmd('redo')],'|',
-  ['B','Bold (Ctrl+B)',()=>cmd('bold')],['I','Italic (Ctrl+I)',()=>cmd('italic')],
-  ['U','Underline',()=>cmd('underline')],['S','Strikethrough',()=>cmd('strikeThrough')],
-  ['HL','Highlight',()=>cmd('hiliteColor','#ffe066')],'|',
-  ['•','Bullet list',()=>cmd('insertUnorderedList')],['1.','Numbered list',()=>cmd('insertOrderedList')],
-  ['☑','Checklist',()=>ins('<ul class="todo"><li><input type="checkbox">&nbsp;</li></ul>')],'|',
-  ['⇤','Align left',()=>cmd('justifyLeft')],['↔','Center',()=>cmd('justifyCenter')],['⇥','Align right',()=>cmd('justifyRight')],'|',
-  ['Link','Link (Ctrl+K)',openLink],['Table','Table',()=>ins(tbl)],['―','Divider',()=>cmd('insertHorizontalRule')],
-  ['Box','Callout box',()=>ins('<div class="box"><b>Note</b><br>Text here</div><p><br></p>')]
-].forEach(b=>{
-  if(b=='|'){$('#tb').appendChild(document.createElement('i'));return}
-  const x=document.createElement('button');
-  x.textContent=b[0];x.title=b[1];x.setAttribute('aria-label',b[1]);
-  x.onmousedown=e=>e.preventDefault();x.onclick=b[2];
+  ['↶', 'Undo', () => cmd('undo')],
+  ['↷', 'Redo', () => cmd('redo')],
+  '|',
+  ['B', 'Bold (Ctrl+B)', () => cmd('bold')],
+  ['I', 'Italic (Ctrl+I)', () => cmd('italic')],
+  ['U', 'Underline', () => cmd('underline')],
+  ['S', 'Strikethrough', () => cmd('strikeThrough')],
+  ['HL', 'Highlight', () => cmd('hiliteColor', '#ff6a0055')],
+  ['</>', 'Code Block', () => cmd('formatBlock', '<pre>')],
+  '|',
+  ['•', 'Bullet list', () => cmd('insertUnorderedList')],
+  ['1.', 'Numbered list', () => cmd('insertOrderedList')],
+  ['☑', 'Checklist', () => ins('<ul class="todo"><li><input type="checkbox">&nbsp;</li></ul>')],
+  '|',
+  ['⇤', 'Align left', () => cmd('justifyLeft')],
+  ['↔', 'Center', () => cmd('justifyCenter')],
+  ['⇥', 'Align right', () => cmd('justifyRight')],
+  '|',
+  ['Link', 'Link (Ctrl+K)', openLink],
+  ['Table', 'Table', () => ins(tbl)],
+  ['―', 'Divider', () => cmd('insertHorizontalRule')],
+  ['Box', 'Directive Box', () => ins('<div class="box"><b>MAGI DIRECTIVE</b><br>Log details here…</div><p><br></p>')],
+  ['⚠ Alert', 'Emergency Callout', () => ins('<div class="box warn"><b>⚠ EMERGENCY // CODE RED</b><br>Critical tactical observation…</div><p><br></p>')]
+].forEach(b => {
+  if (b == '|') { $('#tb').appendChild(document.createElement('i')); return; }
+  const x = document.createElement('button');
+  x.textContent = b[0]; x.title = b[1]; x.setAttribute('aria-label', b[1]);
+  x.onmousedown = e => e.preventDefault();
+  x.onclick = b[2];
   $('#tb').appendChild(x);
 });
 
-// Pocket Mode Toggle Logic
-let isPocket=false;
-$('#pocket-btn').onclick=()=>{
-  isPocket=!isPocket;
-  document.body.classList.toggle('pocket-mode',isPocket);
-  $('#pocket-btn').textContent=isPocket?'🗗 Expand':'🗗 Pocket';
-  // If running in Electron, toggle always-on-top window property
-  try {
-    if(window.require){
-      const { ipcRenderer } = window.require('electron');
-      ipcRenderer.send('toggle-always-on-top', isPocket);
-    }
-  }catch(e){}
+// Tactical SVG Shapes in Toolbar
+const poly = p => `<span class="shp" contenteditable="false" style="width:90px;color:var(--accent)"><svg viewBox="0 0 100 100"><polygon points="${p}" fill="currentColor"/></svg></span>`;
+const SH = {
+  Hexagon: poly('50,3 93,27 93,73 50,97 7,73 7,27'),
+  Triangle: poly('50,6 97,92 3,92'),
+  Diamond: poly('50,3 97,50 50,97 3,50'),
+  Chevron: poly('5,10 45,10 95,50 45,90 5,90 55,50'),
+  Slab: poly('25,15 97,15 75,85 3,85'),
+  Arrowhead: poly('3,50 97,10 70,50 97,90'),
+  Reticle: '<span class="shp" contenteditable="false" style="width:90px;color:var(--accent)"><svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="4"><rect x="24" y="24" width="52" height="52"/><path d="M50 3v30M50 67v30M3 50h30M67 50h30"/></svg></span>',
+  Hazard: '<div class="shp wide" contenteditable="false" style="color:var(--accent)"><svg width="100%" style="height:14px"><defs><pattern id="hz" width="20" height="20" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)"><rect width="10" height="20" fill="currentColor"/></pattern></defs><rect width="100%" height="14" fill="url(#hz)"/></svg></div>'
 };
-
-// shapes
-const poly=p=>`<span class="shp" contenteditable="false" style="width:90px;color:var(--accent)"><svg viewBox="0 0 100 100"><polygon points="${p}" fill="currentColor"/></svg></span>`;
-const SH={
-  Hexagon:poly('50,3 93,27 93,73 50,97 7,73 7,27'),
-  Triangle:poly('50,6 97,92 3,92'),
-  Diamond:poly('50,3 97,50 50,97 3,50'),
-  Chevron:poly('5,10 45,10 95,50 45,90 5,90 55,50'),
-  Slab:poly('25,15 97,15 75,85 3,85'),
-  Arrowhead:poly('3,50 97,10 70,50 97,90'),
-  Reticle:'<span class="shp" contenteditable="false" style="width:90px;color:var(--accent)"><svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="4"><rect x="24" y="24" width="52" height="52"/><path d="M50 3v30M50 67v30M3 50h30M67 50h30"/></svg></span>',
-  Hazard:'<div class="shp wide" contenteditable="false" style="color:var(--accent)"><svg width="100%" style="height:14px"><defs><pattern id="hz" width="20" height="20" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)"><rect width="10" height="20" fill="currentColor"/></pattern></defs><rect width="100%" height="14" fill="url(#hz)"/></svg></div>'
+const ss = document.createElement('select');
+ss.setAttribute('aria-label', 'Insert shape');
+ss.innerHTML = '<option value="">▲ Shape</option>' + Object.keys(SH).map(k => '<option>' + k + '</option>').join('');
+ss.onchange = () => {
+  const v = ss.value; ss.value = ''; if (!v) return;
+  if (saved) { ed.focus(); const s = getSelection(); s.removeAllRanges(); s.addRange(saved); }
+  ins(SH[v] + (v == 'Hazard' ? '<p><br></p>' : '&nbsp;'));
 };
+$('#tb').appendChild(ss);
 
-const ss=document.createElement('select');
-ss.setAttribute('aria-label','Insert shape');
-ss.innerHTML='<option value="">▲ Shape</option>'+Object.keys(SH).map(k=>'<option>'+k+'</option>').join('');
-ss.onchange=()=>{
-  const v=ss.value;ss.value='';if(!v)return;
-  if(saved){ed.focus();const s=getSelection();s.removeAllRanges();s.addRange(saved)}
-  ins(SH[v]+(v=='Hazard'?'<p><br></p>':'&nbsp;'));
-};
-
-function shg(){$('#shg').classList.toggle('on',!!selShape)}
-
-ed.addEventListener('click',e=>{
-  const a=e.target.closest('a'), s=e.target.closest('.shp');
-  if(a){
-    const h=a.getAttribute('href')||'';
-    if(h.startsWith('#wiki:')){
+function shg() { $('#shg').classList.toggle('on', !!selShape); }
+ed.addEventListener('click', e => {
+  const a = e.target.closest('a'), s = e.target.closest('.shp');
+  if (a) {
+    const h = a.getAttribute('href') || '';
+    if (h.startsWith('#wiki:')) {
       e.preventDefault();
-      const t=decodeURIComponent(h.slice(6));
-      let n=items.find(i=>i.type=='note'&&i.name.toLowerCase()==t.toLowerCase());
-      if(!n){n={id:uid(),type:'note',parent:null,name:t,html:''};items.push(n)}
-      cur=n.id;selF=n.parent;save();openNote();tree();return;
+      const t = decodeURIComponent(h.slice(6));
+      let n = items.find(i => i.type == 'note' && (i.name || '').toLowerCase() == t.toLowerCase());
+      if (!n) { n = { id: uid(), type: 'note', parent: null, name: t, html: '' }; items.push(n); }
+      cur = n.id; selF = n.parent; save(); openNote(); tree(); return;
     }
-    if(e.ctrlKey||e.metaKey)window.open(h,'_blank','noopener');
+    if (e.ctrlKey || e.metaKey) window.open(h, '_blank', 'noopener');
   }
-  if(selShape)selShape.classList.remove('selx');
-  selShape=s||null;
-  if(s){
+  if (selShape) selShape.classList.remove('selx');
+  selShape = s || null;
+  if (s) {
     s.classList.add('selx');
-    $('#shc').value='#'+(s.style.color.startsWith('rgb')?s.style.color.match(/\d+/g).map(x=>(+x).toString(16).padStart(2,'0')).join(''):'c2410c');
+    $('#shc').value = '#' + (s.style.color.startsWith('rgb') ? s.style.color.match(/\d+/g).map(x => (+x).toString(16).padStart(2, '0')).join('') : 'ff6a00');
   }
   shg();
 });
-
-const rs=f=>{
-  if(!selShape||selShape.classList.contains('wide'))return;
-  selShape.style.width=Math.max(24,Math.min(700,Math.round(selShape.offsetWidth*f)))+'px';
+const rs = f => {
+  if (!selShape || selShape.classList.contains('wide')) return;
+  selShape.style.width = Math.max(24, Math.min(700, Math.round(selShape.offsetWidth * f))) + 'px';
   sync();
 };
-$('#sm').onclick=()=>rs(.8);
-$('#sl').onclick=()=>rs(1.25);
-$('#shc').oninput=e=>{if(selShape){selShape.style.color=e.target.value;sync()}};
-const rmShape=()=>{if(selShape){selShape.remove();selShape=null;shg();sync();ed.focus()}};
-$('#sd').onclick=rmShape;
+$('#sm').onclick = () => rs(.8);
+$('#sl').onclick = () => rs(1.25);
+$('#shc').oninput = e => { if (selShape) { selShape.style.color = e.target.value; sync(); } };
+const rmShape = () => { if (selShape) { selShape.remove(); selShape = null; shg(); sync(); ed.focus(); } };
+$('#sd').onclick = rmShape;
 
-// ---- local folders & zip exports ----
-const FS=!!window.showDirectoryPicker;
-const idb=(m,k,v)=>new Promise((res,rej)=>{
-  try{
-    const o=indexedDB.open('casper',1);
-    o.onupgradeneeded=()=>o.result.createObjectStore('h');
-    o.onerror=()=>rej(o.error);
-    o.onsuccess=()=>{
-      const s=o.result.transaction('h',m=='get'?'readonly':'readwrite').objectStore('h'), r=m=='get'?s.get(k):s.put(v,k);
-      r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error);
+const at = () => { const n = getSelection().anchorNode; return n && (n.nodeType == 3 ? n.parentElement : n); };
+ed.addEventListener('keydown', e => {
+  if ((e.key == 'Delete' || e.key == 'Backspace') && selShape) { e.preventDefault(); rmShape(); return; }
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() == 'k') { e.preventDefault(); openLink(); return; }
+  if (e.key == 'Tab') {
+    const td = at() && at().closest('td,th');
+    if (td) {
+      e.preventDefault();
+      let nx = td.nextElementSibling || (td.parentElement.nextElementSibling && td.parentElement.nextElementSibling.firstElementChild);
+      if (!nx) {
+        const tr = td.parentElement.cloneNode(true);
+        tr.querySelectorAll('td,th').forEach(c => c.innerHTML = '<br>');
+        td.parentElement.parentElement.appendChild(tr);
+        nx = tr.firstElementChild;
+      }
+      const r = document.createRange(); r.selectNodeContents(nx); r.collapse(true);
+      const s = getSelection(); s.removeAllRanges(); s.addRange(r); sync();
     }
-  }catch(e){rej(e)}
-});
-
-let binds={}, dT=null;
-const saveBinds=()=>idb('set','binds',binds).catch(()=>{});
-idb('get','binds').then(b=>{if(b){binds=b;diskStatus()}}).catch(()=>{});
-
-const safe=s=>((s||'Untitled').replace(/[\\/:*?"<>|]+/g,'-').trim())||'Untitled';
-async function okp(h,req){
-  const o={mode:'readwrite'};
-  if(await h.queryPermission(o)==='granted')return true;
-  return req&&await h.requestPermission(o)==='granted';
-}
-
-const wrapDoc=n=>'<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+esc(n.name)+'</title><style>:root{--accent:'+getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()+'}body{font:17px/1.7 system-ui;max-width:760px;margin:40px auto;padding:0 16px}</style></head><body>'+(n.html||'')+'</body></html>';
-
-async function toDisk(n,req){
-  const b=binds[n.id];if(!b)return;
-  try{
-    if(!await okp(b.dir,req)){b.need=true;diskStatus();return}
-    b.need=false;
-    const w=await(await b.dir.getFileHandle(b.file,{create:true})).createWritable();
-    await w.write(wrapDoc(n));await w.close();
-    diskStatus(1);
-  }catch(e){$('#dsk').textContent='DISK ERROR: '+e.name}
-}
-const diskQ=n=>{if(binds[n.id]){clearTimeout(dT);dT=setTimeout(()=>toDisk(n,false),700)}};
-
-function diskStatus(ok){
-  const n=note(), b=n&&binds[n.id];
-  $('#dk').textContent=!b?'Save to folder…':b.need?'Reconnect folder':'Change folder…';
-  $('#dsk').textContent=b?(b.need?'DISK: CLICK RECONNECT':'DISK → '+b.dir.name+'/'+b.file+(ok?' ✓':'')): '';
-}
-
-const blocked=e=>{$('#dsk').textContent=e.name=='AbortError'?'':'FOLDER ACCESS BLOCKED'};
-const noFS=()=>{$('#dsk').textContent='NOT SUPPORTED IN THIS BROWSER'};
-
-async function saveFolderToPC(folderId){
-  const folder=it(folderId);
-  if(!folder||folder.type!=='folder')return;
-  if(!FS){alert('Directory saving requires Chrome or Edge.');return;}
-  try{
-    const rootDir=await showDirectoryPicker({mode:'readwrite'});
-    const exportSub=async(parentId, parentHandle)=>{
-      const children=items.filter(i=>i.parent===parentId);
-      for(const child of children){
-        if(child.type==='folder'){
-          const subHandle=await parentHandle.getDirectoryHandle(safe(child.name),{create:true});
-          await exportSub(child.id, subHandle);
-        } else if(child.type==='note'){
-          const fileHandle=await parentHandle.getFileHandle(safe(child.name)+'.html',{create:true});
-          const w=await fileHandle.createWritable();
-          await w.write(wrapDoc(child));
-          await w.close();
+    return;
+  }
+  if (e.key == ' ' && !e.ctrlKey && !e.metaKey) {
+    const s = getSelection(), n = s.anchorNode;
+    if (s.isCollapsed && n && n.nodeType == 3 && !n.previousSibling) {
+      const t = n.data.slice(0, s.anchorOffset);
+      const m = { '#': 'h1', '##': 'h2', '###': 'h3', '>': 'blockquote', '-': 'ul', '*': 'ul', '1.': 'ol', '[]': 'todo', '```': 'pre' }[t];
+      if (m) {
+        e.preventDefault();
+        n.deleteData(0, t.length);
+        if (m == 'ul' || m == 'ol') document.execCommand(m == 'ul' ? 'insertUnorderedList' : 'insertOrderedList');
+        else if (m == 'todo') {
+          document.execCommand('insertUnorderedList');
+          const li = at() && at().closest('li');
+          if (li) { li.parentElement.classList.add('todo'); li.insertAdjacentHTML('afterbegin', '<input type="checkbox">'); }
         }
+        else document.execCommand('formatBlock', false, '<' + m + '>');
+        sync();
       }
-    };
-    const targetDir=await rootDir.getDirectoryHandle(safe(folder.name),{create:true});
-    await exportSub(folder.id, targetDir);
-    $('#dsk').textContent='FOLDER "'+folder.name+'" SAVED TO PC ✓';
-  }catch(e){if(e.name!=='AbortError')alert('Error saving folder: '+e.message);}
-}
-
-$('#dsk-folder-btn').onclick=async()=>{
-  const n=note();
-  const folderId=n&&n.parent?n.parent:(items.find(i=>i.type=='folder')||{}).id;
-  if(folderId)saveFolderToPC(folderId);
-  else alert('Please create a folder first to export to PC.');
-};
-
-$('#dk').onclick=async()=>{
-  const n=note();if(!n)return;
-  if(!FS)return noFS();
-  const b=binds[n.id];if(b&&b.need){await toDisk(n,true);return}
-  try{
-    const dir=await showDirectoryPicker({mode:'readwrite'});
-    binds[n.id]={dir,file:safe(n.name)+'.html'};
-    saveBinds();await toDisk(n,true);
-  }catch(e){blocked(e)}
-};
-
-$('#of').onclick=async()=>{
-  if(!FS)return noFS();
-  try{
-    const dir=await showDirectoryPicker({mode:'readwrite'});
-    let c=0; const root={id:uid(),type:'folder',parent:null,name:dir.name,open:true};
-    items.push(root);
-    const walk=async(d,pid,dp)=>{
-      for await(const [nm,h] of d.entries()){
-        if(nm[0]=='.')continue;
-        if(h.kind=='directory'&&dp<4){
-          const f={id:uid(),type:'folder',parent:pid,name:nm,open:false};
-          items.push(f);await walk(h,f.id,dp+1);
-        } else if(h.kind=='file'&&/\.(md|markdown|txt|html?)$/i.test(nm)&&c<500){
-          const t=await(await h.getFile()).text();
-          const x={id:uid(),type:'note',parent:pid,name:nm.replace(/\.[^.]+$/,''),html:/\.html?$/i.test(nm)?clean(t):clean(md(t))};
-          items.push(x);binds[x.id]={dir:d,file:nm};c++;
-        }
-      }
-    };
-    await walk(dir,root.id,0);
-    saveBinds();save();tree();
-    $('#dsk').textContent='IMPORTED '+c+' FILES';
-  }catch(e){blocked(e)}
-};
-
-// ---- style ----
-const MK={
-  hex:'polygon(25% 5%,75% 5%,100% 50%,75% 95%,25% 95%,0 50%)',
-  arrow:'polygon(0 0,100% 50%,0 100%)',
-  diamond:'polygon(50% 0,100% 50%,50% 100%,0 50%)',
-  chevron:'polygon(0 0,55% 0,100% 50%,55% 100%,0 100%,45% 50%)',
-  slab:'polygon(25% 0,100% 0,75% 100%,0 100%)',
-  square:'polygon(0 0,100% 0,100% 100%,0 100%)',
-  notch:'polygon(0 0,100% 0,100% 65%,65% 100%,0 100%)'
-};
-
-const SD={hs:'bracket',hf:'serif',hc:'normal',cr:'cut',sc:100,ac:'',bf:'sans',fs:18,hm:'hex',bm:'arrow',crt:'on'};
-let sty={...SD,...st.get('casper-sty',{})};
-
-function applySty(){
-  const b=document.body, r=document.documentElement.style;
-  b.dataset.hs=sty.hs; b.dataset.hc=sty.hc; b.dataset.cr=sty.cr;
-  b.dataset.font=sty.bf; b.dataset.hm=sty.hm; b.dataset.bm=sty.bm; b.dataset.crt=sty.crt;
-  r.setProperty('--hm',MK[sty.hm]||'none');
-  r.setProperty('--bm',MK[sty.bm]||'none');
-  r.setProperty('--hf',{serif:'var(--serif)',sans:'var(--wf)',mono:'var(--mono)'}[sty.hf]);
-  r.setProperty('--hsc',sty.sc/100);
-  r.setProperty('--fs',sty.fs+'px');
-  if(sty.ac)r.setProperty('--accent',sty.ac); else r.removeProperty('--accent');
-  st.set('casper-sty',sty);
-}
-
-[['hs','s-hs'],['hf','s-hf'],['hc','s-hc'],['cr','s-cr'],['sc','s-sc'],['bf','s-bf'],['fs','s-fs'],['hm','s-hm'],['bm','s-bm'],['crt','s-crt']].forEach(([k,id])=>{
-  const e=$('#'+id);
-  if(e){
-    e.value=sty[k];
-    e.oninput=e.onchange=()=>{sty[k]=['sc','fs'].includes(k)?+e.target.value:e.target.value;applySty()};
+    }
   }
 });
 
-$('#s-ac').oninput=e=>{sty.ac=e.target.value;applySty()};
-$('#s-rs').onclick=()=>{sty.ac='';applySty()};
+// ---- PC FOLDER SYNC & UNIVERSAL ZIP EXPORT ----
+const FS = !!window.showDirectoryPicker;
+const idb = (m, k, v) => new Promise((res, rej) => {
+  try {
+    const o = indexedDB.open('magi', 1);
+    o.onupgradeneeded = () => o.result.createObjectStore('h');
+    o.onerror = () => rej(o.error);
+    o.onsuccess = () => {
+      const s = o.result.transaction('h', m == 'get' ? 'readonly' : 'readwrite').objectStore('h');
+      const r = m == 'get' ? s.get(k) : s.put(v, k);
+      r.onsuccess = () => res(r.result);
+      r.onerror = () => rej(r.error);
+    };
+  } catch (e) { rej(e); }
+});
+let binds = {}, dT = null;
+const saveBinds = () => idb('set', 'binds', binds).catch(() => {});
+idb('get', 'binds').then(b => { if (b) { binds = b; diskStatus(); } }).catch(() => {});
+const safe = s => ((s || 'Untitled').replace(/[\\/:*?"<>|]+/g, '-').trim()) || 'Untitled';
 
-const setTheme=v=>{
-  document.documentElement.dataset.theme=v;
-  st.set('casper-th',v);
-  document.querySelectorAll('.sw').forEach(b=>b.classList.toggle('on',b.dataset.t==v));
+async function okp(h, req) {
+  const o = { mode: 'readwrite' };
+  if (await h.queryPermission(o) === 'granted') return true;
+  return req && await h.requestPermission(o) === 'granted';
+}
+const wrapDoc = n => '<!DOCTYPE html><html><head><meta charset="utf-8"><title>' + esc(n.name) + '</title><style>:root{--accent:' + getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() + '}body{font:17px/1.7 system-ui;max-width:760px;margin:40px auto;padding:0 16px;background:#0d0a08;color:#ece3d2}h1,h2,h3{color:var(--accent)}</style></head><body><h1>' + esc(n.name) + '</h1>' + (n.html || '') + '</body></html>';
+
+function htmlToMd(h) {
+  const d = document.createElement('div'); d.innerHTML = h || '';
+  d.querySelectorAll('h1').forEach(x => x.replaceWith(`# ${x.textContent}\n\n`));
+  d.querySelectorAll('h2').forEach(x => x.replaceWith(`## ${x.textContent}\n\n`));
+  d.querySelectorAll('h3').forEach(x => x.replaceWith(`### ${x.textContent}\n\n`));
+  d.querySelectorAll('li').forEach(x => x.replaceWith(`- ${x.textContent}\n`));
+  d.querySelectorAll('p,div,br').forEach(x => x.insertAdjacentText('afterend', '\n'));
+  return d.textContent.replace(/\n{3,}/g, '\n\n').trim();
+}
+
+async function toDisk(n, req) {
+  const b = binds[n.id]; if (!b) return;
+  try {
+    if (!await okp(b.dir, req)) { b.need = true; diskStatus(); return; }
+    b.need = false;
+    if (/\.(md|markdown|txt)$/i.test(b.file)) { b.file = b.file.replace(/\.[^.]+$/, '') + '.html'; saveBinds(); }
+    const w = await (await b.dir.getFileHandle(b.file, { create: true })).createWritable();
+    await w.write(wrapDoc(n)); await w.close();
+    diskStatus(1);
+  } catch (e) { $('#dsk').textContent = 'DISK ERROR: ' + e.name; }
+}
+const diskQ = n => { if (binds[n.id]) { clearTimeout(dT); dT = setTimeout(() => toDisk(n, false), 700); } };
+function diskStatus(ok) {
+  const n = note(), b = n && binds[n.id];
+  $('#dsk').textContent = b ? (b.need ? 'DISK: CLICK SAVE TO RECONNECT' : 'DISK → ' + b.dir.name + '/' + b.file + (ok ? ' ✓' : '')) : '';
+}
+
+// Recursive Folder Hierarchy Sync to PC via File System Access API
+async function syncFolderTreeToPC(rootFolderId) {
+  const statusEl = $('#sync-status');
+  if (!FS) {
+    statusEl.textContent = 'Direct Directory API unsupported in this browser. Downloading structured .ZIP instead…';
+    await downloadFolderZip(rootFolderId);
+    return;
+  }
+  try {
+    const baseDir = await window.showDirectoryPicker({ mode: 'readwrite' });
+    let count = 0;
+    const writeRecursive = async (parentId, dirHandle) => {
+      const children = kids(parentId);
+      for (const item of children) {
+        if (item.type === 'folder') {
+          const subDir = await dirHandle.getDirectoryHandle(safe(item.name), { create: true });
+          await writeRecursive(item.id, subDir);
+        } else if (item.type === 'note') {
+          const fileName = safe(item.name) + '.html';
+          const fh = await dirHandle.getFileHandle(fileName, { create: true });
+          const w = await fh.createWritable();
+          await w.write(wrapDoc(item));
+          await w.close();
+          binds[item.id] = { dir: dirHandle, file: fileName };
+          count++;
+        }
+      }
+    };
+
+    if (rootFolderId) {
+      const f = it(rootFolderId);
+      if (f && f.type === 'folder') {
+        const subDir = await baseDir.getDirectoryHandle(safe(f.name), { create: true });
+        await writeRecursive(f.id, subDir);
+      }
+    } else {
+      await writeRecursive(null, baseDir);
+    }
+    saveBinds();
+    diskStatus(1);
+    statusEl.textContent = `✓ SYNC COMPLETE: Wrote ${count} directive(s) & folders to "${baseDir.name}" on your PC.`;
+    $('#dsk').textContent = `SYNCED ${count} FILES → ${baseDir.name} ✓`;
+  } catch (e) {
+    if (e.name === 'AbortError') return;
+    statusEl.textContent = 'Direct folder access restricted by preview frame — generating .ZIP folder archive instead…';
+    await downloadFolderZip(rootFolderId);
+  }
+}
+
+// Universal ZIP Folder Hierarchy Export (Works everywhere including iframes)
+async function downloadFolderZip(rootFolderId) {
+  const statusEl = $('#sync-status');
+  if (typeof JSZip === 'undefined') {
+    statusEl.textContent = 'JSZip not loaded; using JSON backup.';
+    $('#bk').click();
+    return;
+  }
+  const zip = new JSZip();
+  let count = 0;
+
+  const addRecursive = (parentId, zipFolder) => {
+    const children = kids(parentId);
+    for (const item of children) {
+      if (item.type === 'folder') {
+        const sub = zipFolder.folder(safe(item.name));
+        addRecursive(item.id, sub);
+      } else if (item.type === 'note') {
+        zipFolder.file(safe(item.name) + '.html', wrapDoc(item));
+        zipFolder.file(safe(item.name) + '.md', `# ${item.name || 'Untitled'}\n\n` + htmlToMd(item.html));
+        count++;
+      }
+    }
+  };
+
+  let zipName = 'CASPER-03_CENTRAL_DOGMA_ARCHIVE.zip';
+  if (rootFolderId) {
+    const f = it(rootFolderId);
+    if (f && f.type === 'folder') {
+      const rootZip = zip.folder(safe(f.name));
+      addRecursive(f.id, rootZip);
+      zipName = `${safe(f.name)}_ARCHIVE.zip`;
+    }
+  } else {
+    addRecursive(null, zip);
+  }
+
+  const blob = await zip.generateAsync({ type: 'blob' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = zipName;
+  a.click();
+  statusEl.textContent = `✓ DOWNLOADED "${zipName}" (${count} notes in preserved PC folder tree).`;
+  $('#dsk').textContent = `ZIP SAVED → ${zipName}`;
+}
+
+function openSyncModal(folderId = null) {
+  syncFolderTarget = folderId || (selF && it(selF) ? selF : null);
+  const fObj = syncFolderTarget ? it(syncFolderTarget) : null;
+  $('#sync-title').textContent = fObj ? `SAVE FOLDER "${fObj.name.toUpperCase()}" TO PC` : 'SAVE FOLDERS & ARCHIVE TO PC';
+  $('#act-zip-cur').hidden = !fObj;
+  if (fObj) $('#act-zip-cur').textContent = `Download "${fObj.name}" (.ZIP)`;
+  $('#sync-status').textContent = '';
+  $('#sync-modal').hidden = false;
+}
+
+$('#sf-pc').onclick = () => openSyncModal(null);
+$('#dk').onclick = () => openSyncModal(selF);
+$('#sync-close').onclick = () => { $('#sync-modal').hidden = true; };
+$('#act-sync-dir').onclick = () => syncFolderTreeToPC(syncFolderTarget);
+$('#act-zip-all').onclick = () => downloadFolderZip(null);
+$('#act-zip-cur').onclick = () => downloadFolderZip(syncFolderTarget);
+$('#act-bind-note').onclick = async () => {
+  const n = note();
+  if (!n) { $('#sync-status').textContent = 'Open a note first to bind it.'; return; }
+  if (!FS) { downloadFolderZip(n.parent); return; }
+  try {
+    const dir = await showDirectoryPicker({ mode: 'readwrite' });
+    binds[n.id] = { dir, file: safe(n.name) + '.html' };
+    saveBinds();
+    await toDisk(n, true);
+    $('#sync-status').textContent = `✓ Bound "${n.name}" to ${dir.name}/${binds[n.id].file}`;
+  } catch (e) {
+    if (e.name !== 'AbortError') $('#sync-status').textContent = 'Direct picker blocked in iframe; use ZIP download above.';
+  }
 };
-document.querySelectorAll('.sw').forEach(b=>b.onclick=()=>{sty.ac='';applySty();setTheme(b.dataset.t)});
-setTheme(st.get('casper-th','nerv'));
+
+// Import PC Folder
+$('#of').onclick = async () => {
+  if (!FS) { $('#dsk').textContent = 'USE CHROME/EDGE IN OWN TAB FOR DIRECT IMPORT'; return; }
+  try {
+    const dir = await showDirectoryPicker({ mode: 'readwrite' });
+    let c = 0;
+    const root = { id: uid(), type: 'folder', parent: null, name: dir.name, open: true };
+    items.push(root);
+    const walk = async (d, pid, dp) => {
+      for await (const [nm, h] of d.entries()) {
+        if (nm[0] == '.') continue;
+        if (h.kind == 'directory' && dp < 5) {
+          const f = { id: uid(), type: 'folder', parent: pid, name: nm, open: false };
+          items.push(f);
+          await walk(h, f.id, dp + 1);
+        } else if (h.kind == 'file' && /\.(md|markdown|txt|html?)$/i.test(nm) && c < 500) {
+          const t = await (await h.getFile()).text();
+          const x = { id: uid(), type: 'note', parent: pid, name: nm.replace(/\.[^.]+$/, ''), html: /\.html?$/i.test(nm) ? clean(t) : clean(md(t)) };
+          items.push(x);
+          binds[x.id] = { dir: d, file: nm };
+          c++;
+        }
+      }
+    };
+    await walk(dir, root.id, 0);
+    saveBinds(); save(); tree();
+    $('#dsk').textContent = 'IMPORTED ' + c + ' FILES FROM ' + dir.name;
+  } catch (e) {
+    if (e.name != 'AbortError') openSyncModal(null);
+  }
+};
+
+// ---- STYLE & THEMES ----
+const MK = {
+  hex: 'polygon(25% 5%,75% 5%,100% 50%,75% 95%,25% 95%,0 50%)',
+  arrow: 'polygon(0 0,100% 50%,0 100%)',
+  diamond: 'polygon(50% 0,100% 50%,50% 100%,0 50%)',
+  chevron: 'polygon(0 0,55% 0,100% 50%,55% 100%,0 100%,45% 50%)',
+  slab: 'polygon(25% 0,100% 0,75% 100%,0 100%)',
+  square: 'polygon(0 0,100% 0,100% 100%,0 100%)',
+  notch: 'polygon(0 0,100% 0,100% 65%,65% 100%,0 100%)'
+};
+const SD = { hs: 'bracket', hf: 'serif', hc: 'upper', cr: 'cut', sc: 100, ac: '', bf: 'sans', fs: 18, hm: 'hex', bm: 'arrow', crt: true };
+let sty = { ...SD, ...st.get('mn3-sty', {}) };
+
+function applySty() {
+  const b = document.body, r = document.documentElement.style;
+  b.dataset.hs = sty.hs; b.dataset.hc = sty.hc; b.dataset.cr = sty.cr; b.dataset.font = sty.bf; b.dataset.hm = sty.hm; b.dataset.bm = sty.bm;
+  b.classList.toggle('crt-on', !!sty.crt);
+  $('#s-crt').checked = !!sty.crt;
+  r.setProperty('--hm', MK[sty.hm] || 'none');
+  r.setProperty('--bm', MK[sty.bm] || 'none');
+  r.setProperty('--hf', { serif: 'var(--serif)', sans: 'var(--wf)', mono: 'var(--mono)' }[sty.hf]);
+  r.setProperty('--hsc', sty.sc / 100);
+  r.setProperty('--fs', sty.fs + 'px');
+  if (sty.ac) r.setProperty('--accent', sty.ac); else r.removeProperty('--accent');
+  st.set('mn3-sty', sty);
+}
+[['hs', 's-hs'], ['hf', 's-hf'], ['hc', 's-hc'], ['cr', 's-cr'], ['sc', 's-sc'], ['bf', 's-bf'], ['fs', 's-fs'], ['hm', 's-hm'], ['bm', 's-bm']].forEach(([k, id]) => {
+  const e = $('#' + id); e.value = sty[k];
+  e.oninput = () => { sty[k] = ['sc', 'fs'].includes(k) ? +e.value : e.value; applySty(); };
+});
+$('#s-crt').onchange = e => { sty.crt = e.target.checked; applySty(); };
+$('#s-ac').oninput = e => { sty.ac = e.target.value; applySty(); };
+$('#s-rs').onclick = () => { sty.ac = ''; applySty(); };
+
+const setTheme = v => {
+  document.documentElement.dataset.theme = v;
+  st.set('mn4-th', v);
+  document.querySelectorAll('.sw').forEach(b => b.classList.toggle('on', b.dataset.t == v));
+};
+document.querySelectorAll('.sw').forEach(b => b.onclick = () => { sty.ac = ''; applySty(); setTheme(b.dataset.t); });
+setTheme(st.get('mn4-th', 'nerv'));
 applySty();
 
-$('#stb').onclick=()=>{$('#sp').hidden=!$('#sp').hidden};
-$('#spx').onclick=()=>{$('#sp').hidden=true};
-
-const dim=$('#dim');
-const setDim=v=>{document.documentElement.style.setProperty('--dimmer',v/100);st.set('mn2-dim',v)};
-dim.oninput=()=>setDim(dim.value);
-dim.value=st.get('mn2-dim',55);
+$('#stb').onclick = () => { $('#sp').hidden = !$('#sp').hidden; };
+$('#spx').onclick = () => { $('#sp').hidden = true; };
+const dim = $('#dim');
+const setDim = v => { document.documentElement.style.setProperty('--dimmer', v / 100); st.set('mn2-dim', v); };
+dim.oninput = () => setDim(dim.value);
+dim.value = st.get('mn2-dim', 85);
 setDim(dim.value);
 
-const setBg=u=>$('#bg').style.backgroundImage=u?`url("${u}")`:'none';
-$('#bgf').onchange=e=>{
-  const f=e.target.files[0];
-  if(f){
-    const r=new FileReader();
-    r.onload=()=>{setBg(r.result);st.set('casper-bg',r.result)||($('#sv').textContent='BG TOO BIG')};
+const setBg = u => $('#bg').style.backgroundImage = u ? `url("${u}")` : 'none';
+$('#bgf').onchange = e => {
+  const f = e.target.files[0];
+  if (f) {
+    const r = new FileReader();
+    r.onload = () => { setBg(r.result); st.set('mn2-bg', r.result) || ($('#sv').textContent = 'BG TOO BIG TO SAVE'); };
     r.readAsDataURL(f);
   }
 };
-setBg(st.get('casper-bg',''));
+setBg(st.get('mn2-bg', ''));
 
-// ---- ui + export ----
-function toggleSb(){document.body.classList.toggle(innerWidth<=800?'sbo':'nosb')}
-$('#sbt').onclick=toggleSb;
-$('#bd').onclick=()=>document.body.classList.remove('sbo');
-
-document.addEventListener('keydown',e=>{
-  if(e.key=='Escape'){$('#sp').hidden=true;document.body.classList.remove('sbo')}
-  if(e.ctrlKey||e.metaKey){
-    const k=e.key.toLowerCase();
-    if(k=='p'){e.preventDefault();if(document.body.classList.contains('nosb'))toggleSb();$('#q').focus()}
-    if(k=='s'){e.preventDefault();save()}
+// ---- COMMAND PALETTE ----
+function openCmdPalette() {
+  $('#cmd-modal').hidden = false;
+  $('#cmd-in').value = '';
+  renderCmdList('');
+  $('#cmd-in').focus();
+}
+function renderCmdList(q) {
+  const ql = q.trim().toLowerCase();
+  const actions = [
+    { label: '+ Create New Directive (Note)', sub: 'ACTION', run: () => add('note', target()) },
+    { label: '+ Create New Folder', sub: 'ACTION', run: () => add('folder', target()) },
+    { label: '💾 Save All Folders & Notes to PC (.ZIP / Sync)', sub: 'DISK', run: () => openSyncModal(null) },
+    { label: '🎨 Theme: NERV Command (Default)', sub: 'THEME', run: () => setTheme('nerv') },
+    { label: '🎨 Theme: EVA UNIT-01 (Purple/Green)', sub: 'THEME', run: () => setTheme('unit01') },
+    { label: '🎨 Theme: EVA UNIT-02 (Crimson/Amber)', sub: 'THEME', run: () => setTheme('unit02') },
+    { label: '🎨 Theme: SEELE Monolith', sub: 'THEME', run: () => setTheme('seele') },
+    { label: '🎨 Theme: Field Report Paper', sub: 'THEME', run: () => setTheme('paper') },
+    { label: '📺 Toggle CRT Scanline Overlay', sub: 'DISPLAY', run: () => { sty.crt = !sty.crt; applySty(); } },
+    { label: '🔒 Lock Terminal / Switch Operative', sub: 'SECURITY', run: () => $('#op-btn').click() }
+  ];
+  const noteItems = items.filter(i => i.type == 'note').map(n => ({
+    label: `▫ ${n.name || 'Untitled'}`,
+    sub: path(it(n.parent) || { name: 'ROOT' }).join('/'),
+    run: () => { cur = n.id; selF = n.parent; openNote(); save(); tree(); }
+  }));
+  const all = [...noteItems, ...actions].filter(x => !ql || x.label.toLowerCase().includes(ql) || x.sub.toLowerCase().includes(ql));
+  const box = $('#cmd-list');
+  box.innerHTML = all.map((x, idx) => `<div class="cmd-item ${idx === 0 ? 'active' : ''}" data-idx="${idx}"><span>${esc(x.label)}</span><small>${esc(x.sub)}</small></div>`).join('') || '<div class="sub" style="padding:12px">No matching commands</div>';
+  box.querySelectorAll('.cmd-item').forEach(el => {
+    el.onclick = () => {
+      const item = all[+el.dataset.idx];
+      $('#cmd-modal').hidden = true;
+      if (item) item.run();
+    };
+  });
+}
+$('#cmdb').onclick = openCmdPalette;
+$('#cmd-close').onclick = () => { $('#cmd-modal').hidden = true; };
+$('#cmd-in').oninput = e => renderCmdList(e.target.value);
+$('#cmd-in').onkeydown = e => {
+  if (e.key === 'Escape') { $('#cmd-modal').hidden = true; return; }
+  if (e.key === 'Enter') {
+    const first = $('#cmd-list .cmd-item');
+    if (first) first.click();
   }
-});
-document.addEventListener('pointerdown',e=>{const sp=$('#sp');if(!sp.hidden&&!sp.contains(e.target)&&e.target.id!='stb')sp.hidden=true});
-
-const dl=(n,t,m)=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:m}));a.download=n;a.click()};
-const printIt=()=>{$('#sp').hidden=true;if(selShape){selShape.classList.remove('selx');selShape=null;shg()}setTimeout(()=>window.print(),120)};
-$('#pdfb').onclick=printIt;
-$('#pdf').onclick=printIt;
-
-$('#doc').onclick=()=>{
-  const n=note();if(!n)return;
-  const c=ed.cloneNode(true);
-  c.querySelectorAll('.shp').forEach(x=>x.remove());
-  const a=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
-  dl(safe(n.name)+'.doc','<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><style>body{font-family:Calibri,Arial;font-size:12pt}h1,h2,h3{color:'+a+'}td,th{border:1px solid #999;padding:4px}table{border-collapse:collapse}</style></head><body><h1>'+esc(n.name)+'</h1>'+c.innerHTML+'</body></html>','application/msword');
 };
 
-$('#bk').onclick=()=>dl('casper-archive-backup.json',JSON.stringify(items),'application/json');
-$('#rs').onchange=e=>{
-  const f=e.target.files[0];if(!f)return;
-  f.text().then(t=>{
-    try{
-      const d=JSON.parse(t);
-      if(Array.isArray(d)&&d.every(x=>x.id&&x.type)){
-        items=d;mig();cur=(items.find(i=>i.type=='note')||{}).id||null;save();openNote();tree();
-      }else $('#sv').textContent='BAD BACKUP';
-    }catch(x){$('#sv').textContent='BAD BACKUP'}
+// ---- UI & EXPORT ----
+function toggleSb() { document.body.classList.toggle(innerWidth <= 820 ? 'sbo' : 'nosb'); }
+$('#sbt').onclick = toggleSb;
+$('#bd').onclick = () => document.body.classList.remove('sbo');
+
+document.addEventListener('keydown', e => {
+  if (e.key == 'Escape') {
+    $('#sp').hidden = true;
+    $('#sync-modal').hidden = true;
+    $('#cmd-modal').hidden = true;
+    document.body.classList.remove('sbo');
+  }
+  if (e.ctrlKey || e.metaKey) {
+    const k = e.key.toLowerCase();
+    if (k == 'p' && e.shiftKey) { e.preventDefault(); openCmdPalette(); return; }
+    if (k == 'p') { e.preventDefault(); if (document.body.classList.contains('nosb')) toggleSb(); $('#q').focus(); }
+    if (k == 's') { e.preventDefault(); save(); if (e.shiftKey) openSyncModal(null); }
+  }
+});
+document.addEventListener('pointerdown', e => {
+  const sp = $('#sp');
+  if (!sp.hidden && !sp.contains(e.target) && e.target.id != 'stb') sp.hidden = true;
+});
+
+const dl = (n, t, m) => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([t], { type: m })); a.download = n; a.click(); };
+const printIt = () => {
+  $('#sp').hidden = true;
+  if (selShape) { selShape.classList.remove('selx'); selShape = null; shg(); }
+  setTimeout(() => window.print(), 120);
+};
+$('#pdfb').onclick = printIt;
+$('#pdf').onclick = printIt;
+
+$('#doc').onclick = () => {
+  const n = note(); if (!n) return;
+  const c = ed.cloneNode(true); c.querySelectorAll('.shp').forEach(x => x.remove());
+  const a = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
+  dl(safe(n.name) + '.doc', '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><style>body{font-family:Calibri,Arial;font-size:12pt}h1,h2,h3{color:' + a + '}td,th{border:1px solid #999;padding:4px}table{border-collapse:collapse}</style></head><body><h1>' + esc(n.name) + '</h1>' + c.innerHTML + '</body></html>', 'application/msword');
+};
+
+$('#md-exp').onclick = () => {
+  const n = note(); if (!n) return;
+  dl(safe(n.name) + '.md', `# ${n.name || 'Untitled'}\n\n` + htmlToMd(n.html), 'text/markdown');
+};
+
+$('#bk').onclick = () => dl('casper-03-archive-backup.json', JSON.stringify(items, null, 2), 'application/json');
+$('#rs').onchange = e => {
+  const f = e.target.files[0]; if (!f) return;
+  f.text().then(t => {
+    try {
+      const d = JSON.parse(t);
+      if (Array.isArray(d) && d.every(x => x.id && x.type)) {
+        items = d; mig(); cur = (items.find(i => i.type == 'note') || {}).id || null;
+        save(); openNote(); tree();
+      } else $('#sv').textContent = 'BAD BACKUP FILE';
+    } catch (x) { $('#sv').textContent = 'BAD BACKUP FILE'; }
   });
 };
 
-if(!note()){const n=items.find(i=>i.type=='note');cur=n?n.id:null}
-openNote();tree();
+// Live Telemetry Clock & Sync Fluctuation
+setInterval(() => {
+  const now = new Date();
+  $('#clock').textContent = now.toTimeString().slice(0, 8);
+  $('#sync-rate').textContent = (99.4 + Math.random() * 0.5).toFixed(1) + '%';
+}, 1500);
+
+if (!note()) { const n = items.find(i => i.type == 'note'); cur = n ? n.id : null; }
+openNote();
+tree();
 </script>
 </body>
 </html>
