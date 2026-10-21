@@ -124,13 +124,21 @@ body[data-font=mono] { --wf: var(--mono); }
   pointer-events: none;
   z-index: 999;
   background:
-    linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.22) 50%),
-    radial-gradient(circle at center, transparent 65%, rgba(0, 0, 0, 0.45) 100%);
-  background-size: 100% 3px, 100% 100%;
+    linear-gradient(rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.05) 50%),
+    radial-gradient(circle at center, transparent 75%, rgba(0, 0, 0, 0.15) 100%);
+  background-size: 100% 4px, 100% 100%;
   opacity: 0;
-  transition: opacity .25s;
+  transition: opacity .2s;
 }
-body.crt-on #crt { opacity: 1; }
+body.crt-on #crt {
+  opacity: var(--crt-opacity, 0.35);
+}
+:root[data-theme=paper] #crt {
+  background:
+    linear-gradient(rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.02) 50%),
+    radial-gradient(circle at center, transparent 80%, rgba(0, 0, 0, 0.06) 100%);
+  background-size: 100% 4px, 100% 100%;
+}
 
 #bd { position: fixed; inset: 0; z-index: 15; background: #000b; display: none; backdrop-filter: blur(2px); }
 #app { position: relative; z-index: 1; height: 100%; display: grid; grid-template-columns: 300px minmax(0, 1fr); }
@@ -773,6 +781,28 @@ body:not([data-bm=none]) #ed ul:not(.todo) > li::before {
   letter-spacing: .05em;
 }
 .auth-msg.ok { color: #00e08a; }
+.auth-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid #ff6a0044;
+  padding-bottom: 6px;
+}
+.auth-tab-btn {
+  flex: 1;
+  background: transparent;
+  color: #8c7f70;
+  border: 1px solid transparent;
+  padding: 7px 10px;
+  font: 700 11px var(--mono);
+  letter-spacing: .12em;
+  cursor: pointer;
+}
+.auth-tab-btn.active {
+  color: #ff6a00;
+  background: rgba(255, 106, 0, 0.12);
+  border-color: #ff6a00;
+}
 .auth-actions { display: flex; gap: 8px; }
 .auth-actions button {
   flex: 1;
@@ -792,13 +822,27 @@ body:not([data-bm=none]) #ed ul:not(.todo) > li::before {
   align-items: center;
   gap: 5px;
   border: 1px solid #ff6a0066;
-  padding: 2px 8px;
+  padding: 3px 8px;
   margin: 4px 4px 0 0;
   cursor: pointer;
   color: #ece3d2;
   font-size: 11px;
+  background: rgba(255, 106, 0, 0.05);
 }
 .op-chip:hover { border-color: #00e08a; color: #00e08a; }
+.op-chip .chip-del {
+  color: #ff3a22;
+  margin-left: 4px;
+  font-weight: 700;
+  cursor: pointer;
+  opacity: 0.6;
+  padding: 0 2px;
+}
+.op-chip .chip-del:hover {
+  opacity: 1;
+  background: #ff3a22;
+  color: #fff;
+}
 
 @media(hover:none) { .row .ac { display: flex; } }
 @media(pointer:coarse) {
@@ -1062,14 +1106,28 @@ body[data-cr=cut] #pip-banner {
         <div class="pillar"><b>BALTHASAR-2</b>MOTHER // OK</div>
         <div class="pillar"><b>CASPER-3</b>WOMAN // ACTIVE</div>
       </div>
+
+      <!-- Auth Mode Tabs -->
+      <div class="auth-tabs">
+        <button type="button" id="tab-login" class="auth-tab-btn active">SIGN IN // AUTHENTICATE</button>
+        <button type="button" id="tab-reg" class="auth-tab-btn">+ REGISTER OPERATIVE</button>
+      </div>
+
       <form id="auth-form" autocomplete="off">
         <div class="auth-field">
           <label for="au-user">OPERATIVE DESIGNATION (USERNAME)</label>
-          <input type="text" id="au-user" placeholder="e.g. KATSURAGI.M or IKARI.S" required>
+          <input type="text" id="au-user" placeholder="e.g. KATSURAGI.M or RAIN" required>
         </div>
         <div class="auth-field">
           <label for="au-pass">SECURITY CLEARANCE CODE (PASSWORD)</label>
-          <input type="password" id="au-pass" placeholder="Enter clearance code…" required>
+          <div style="display:flex;gap:4px">
+            <input type="password" id="au-pass" placeholder="Enter clearance code…" required style="flex:1">
+            <button type="button" id="au-toggle-eye" style="padding:0 9px;font-size:13px;border:1px solid #ff6a0066;flex:none" title="Show/Hide Password">👁</button>
+          </div>
+        </div>
+        <div class="auth-field" id="au-field-conf" hidden>
+          <label for="au-pass-conf">CONFIRM CLEARANCE CODE</label>
+          <input type="password" id="au-pass-conf" placeholder="Re-enter clearance code to verify…">
         </div>
         <div class="auth-field">
           <label for="au-lvl">CLEARANCE TIER</label>
@@ -1082,16 +1140,19 @@ body[data-cr=cut] #pip-banner {
         </div>
         <label class="auth-rem">
           <input type="checkbox" id="au-rem" checked>
-          RETAIN CREDENTIALS IN LOCAL MAGI CORE (Auto-login & save login info)
+          RETAIN CREDENTIALS IN LOCAL MAGI CORE (Auto-login & stay signed in)
         </label>
         <div id="au-msg" class="auth-msg"></div>
         <div class="auth-actions">
-          <button type="submit" class="pri">AUTHENTICATE // ENTER</button>
+          <button type="submit" id="au-submit-btn" class="pri">AUTHENTICATE // ENTER</button>
           <button type="button" id="au-guest" class="sec" title="Bypass login with Guest Operative session">EMERGENCY BYPASS</button>
         </div>
       </form>
-      <div class="saved-ops" id="saved-ops-wrap" hidden>
-        <div>REGISTERED OPERATIVES IN MAGI MEMORY (Click to autofill):</div>
+      <div class="saved-ops" id="saved-ops-wrap">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <span style="font-size:10.5px">OPERATIVES IN MAGI MEMORY:</span>
+          <button type="button" id="au-quick-demo" style="font-size:9.5px;padding:1px 6px">DEMO: NERV.OP</button>
+        </div>
         <div id="saved-ops-list"></div>
       </div>
     </div>
@@ -1275,6 +1336,7 @@ body[data-cr=cut] #pip-banner {
       </div>
       <h4>TERMINAL DISPLAY</h4>
       <label>CRT Scanlines<input type="checkbox" id="s-crt" checked style="accent-color:var(--accent);transform:scale(1.2)"></label>
+      <label>CRT Intensity<input type="range" id="s-crt-lvl" min="0" max="70" value="25" style="width:110px;accent-color:var(--accent);vertical-align:middle"></label>
       <h4>HEADINGS</h4>
       <label>Style<select id="s-hs"><option value="plain">Plain</option><option value="bracket">Bracket bar</option><option value="block">Solid block</option><option value="slash">Slash //</option><option value="hazard">Hazard underline</option><option value="boxed">Boxed + shadow</option></select></label>
       <label>Font<select id="s-hf"><option value="serif">Mincho serif</option><option value="sans">Sans</option><option value="mono">Mono</option></select></label>
@@ -1428,26 +1490,65 @@ function path(n) {
 }
 const plain = h => { const d = document.createElement('div'); d.innerHTML = h; return d.textContent.toLowerCase(); };
 
-// ---- AUTHENTICATION / LOGIN SYSTEM ----
-let accounts = st.get('casper-accounts', []);
-let session = st.get('casper-session', null);
+// ---- AUTHENTICATION / LOGIN SYSTEM (100% Free & Local, Zero Cloud Dependencies) ----
+const DEFAULT_ACCOUNT = { user: 'NERV.OPERATIVE', pass: 'nerv', level: 'LEVEL-AAA // COMMANDER', remember: true, created: Date.now() };
+let accounts = st.get('casper-accounts', [DEFAULT_ACCOUNT]);
+if (!accounts.length) accounts = [DEFAULT_ACCOUNT];
+
+// Session resolution: check sessionStorage (active tab) then localStorage (persistent)
+let session = null;
+try {
+  const sess = sessionStorage.getItem('casper-session');
+  if (sess) session = JSON.parse(sess);
+} catch (e) {}
+if (!session) {
+  session = st.get('casper-session', null);
+}
+
+let authMode = 'login'; // 'login' or 'register'
+
+function setAuthMode(mode) {
+  authMode = mode;
+  $('#tab-login').classList.toggle('active', mode === 'login');
+  $('#tab-reg').classList.toggle('active', mode === 'register');
+  $('#au-field-conf').hidden = (mode !== 'register');
+  $('#au-submit-btn').textContent = mode === 'login' ? 'AUTHENTICATE // ENTER' : 'REGISTER // CREATE OPERATIVE';
+  $('#au-msg').textContent = '';
+  $('#au-msg').className = 'auth-msg';
+}
 
 function renderSavedOps() {
   const wrap = $('#saved-ops-wrap'), list = $('#saved-ops-list');
-  if (!accounts.length) { wrap.hidden = true; return; }
+  if (!accounts.length) {
+    list.innerHTML = '<span style="color:var(--dim);font-size:11px">No registered operatives. Use Register tab.</span>';
+    return;
+  }
   wrap.hidden = false;
   list.innerHTML = accounts.map(a =>
-    `<span class="op-chip" data-u="${esc(a.user)}">● ${esc(a.user)} <small style="opacity:.6">(${esc(a.level.split(' ')[0])})</small></span>`
+    `<span class="op-chip" data-u="${esc(a.user)}" title="Click to autofill operative">● ${esc(a.user)} <small style="opacity:.6">(${esc(a.level.split(' ')[0])})</small><span class="chip-del" data-del="${esc(a.user)}" title="Delete from local memory">✕</span></span>`
   ).join('');
+
   list.querySelectorAll('.op-chip').forEach(chip => {
-    chip.onclick = () => {
+    chip.onclick = e => {
+      if (e.target.classList.contains('chip-del')) {
+        e.stopPropagation();
+        const delUser = e.target.dataset.del;
+        accounts = accounts.filter(x => x.user.toLowerCase() !== delUser.toLowerCase());
+        st.set('casper-accounts', accounts);
+        renderSavedOps();
+        $('#au-msg').textContent = `REMOVED OPERATIVE "${delUser}" FROM LOCAL MAGI MEMORY`;
+        $('#au-msg').className = 'auth-msg';
+        return;
+      }
       const acc = accounts.find(x => x.user === chip.dataset.u);
       if (acc) {
+        setAuthMode('login');
         $('#au-user').value = acc.user;
-        $('#au-pass').value = acc.pass || '';
+        $('#au-pass').value = acc.remember ? (acc.pass || '') : '';
         $('#au-lvl').value = acc.level || 'LEVEL-AAA // COMMANDER';
-        $('#au-msg').textContent = 'CREDENTIALS RECALLED FROM MAGI CORE';
+        $('#au-msg').textContent = acc.remember ? 'CREDENTIALS RECALLED FROM MAGI CORE' : `OPERATIVE "${acc.user}" SELECTED. Enter password.`;
         $('#au-msg').className = 'auth-msg ok';
+        if (!acc.remember) $('#au-pass').focus();
       }
     };
   });
@@ -1458,16 +1559,43 @@ function updateOperativeUI() {
     $('#op-name').textContent = `${session.user.toUpperCase()} [${(session.level || 'OPS').split(' ')[0]}]`;
     $('#auth-gate').hidden = true;
   } else {
+    // If opened in popout pocket mode, adopt default operative so note-taking is never blocked
+    if (new URLSearchParams(window.location.search).get('mode') === 'pocket' || window.location.hash === '#pocket') {
+      const activeOp = accounts[0] || DEFAULT_ACCOUNT;
+      session = { user: activeOp.user, level: activeOp.level, remember: true, active: true };
+      $('#op-name').textContent = `${session.user.toUpperCase()} [${(session.level || 'OPS').split(' ')[0]}]`;
+      $('#auth-gate').hidden = true;
+      return;
+    }
     $('#auth-gate').hidden = false;
     renderSavedOps();
     if (accounts.length) {
       const last = accounts[accounts.length - 1];
       $('#au-user').value = last.user;
-      if (last.remember) $('#au-pass').value = last.pass;
+      if (last.remember) $('#au-pass').value = last.pass || '';
       $('#au-lvl').value = last.level || 'LEVEL-AAA // COMMANDER';
     }
   }
 }
+
+$('#tab-login').onclick = () => setAuthMode('login');
+$('#tab-reg').onclick = () => setAuthMode('register');
+
+$('#au-toggle-eye').onclick = () => {
+  const p = $('#au-pass');
+  const isPass = p.type === 'password';
+  p.type = isPass ? 'text' : 'password';
+  $('#au-toggle-eye').textContent = isPass ? '🔒' : '👁';
+};
+
+$('#au-quick-demo').onclick = () => {
+  setAuthMode('login');
+  $('#au-user').value = 'NERV.OPERATIVE';
+  $('#au-pass').value = 'nerv';
+  $('#au-lvl').value = 'LEVEL-AAA // COMMANDER';
+  $('#au-msg').textContent = 'DEMO CREDENTIALS LOADED (nerv / 1997)';
+  $('#au-msg').className = 'auth-msg ok';
+};
 
 $('#auth-form').onsubmit = e => {
   e.preventDefault();
@@ -1475,39 +1603,88 @@ $('#auth-form').onsubmit = e => {
   const pass = $('#au-pass').value;
   const level = $('#au-lvl').value;
   const remember = $('#au-rem').checked;
-  if (!user || !pass) return;
+  const msgEl = $('#au-msg');
+
+  if (!user || !pass) {
+    msgEl.textContent = 'PLEASE ENTER USERNAME AND CLEARANCE CODE';
+    msgEl.className = 'auth-msg';
+    return;
+  }
 
   const existing = accounts.find(a => a.user.toLowerCase() === user.toLowerCase());
-  if (existing && existing.pass !== pass) {
-    // Update password or inform operative
-    existing.pass = pass;
-    existing.level = level;
-    existing.remember = remember;
-  } else if (!existing) {
-    accounts.push({ user, pass, level, remember, created: Date.now() });
-  } else {
-    existing.level = level;
-    existing.remember = remember;
-  }
-  st.set('casper-accounts', accounts);
-  session = { user, level, remember, active: true };
-  if (remember) st.set('casper-session', session);
-  else localStorage.removeItem('casper-session');
 
-  $('#au-msg').textContent = 'MAGI VOTE UNANIMOUS // ACCESS GRANTED';
-  $('#au-msg').className = 'auth-msg ok';
-  updateOperativeUI();
+  if (authMode === 'login') {
+    // LOGIN MODE: verify credentials against local memory
+    if (!existing) {
+      msgEl.textContent = `OPERATIVE "${user}" NOT FOUND. Switch to "+ REGISTER" tab above.`;
+      msgEl.className = 'auth-msg';
+      return;
+    }
+    if (existing.pass !== pass) {
+      msgEl.textContent = '❌ ACCESS DENIED // INVALID CLEARANCE CODE. Check password.';
+      msgEl.className = 'auth-msg';
+      $('#au-pass').focus();
+      $('#au-pass').select();
+      return;
+    }
+
+    // Success
+    existing.level = level;
+    existing.remember = remember;
+    existing.lastLogin = Date.now();
+    st.set('casper-accounts', accounts);
+
+    session = { user: existing.user, level: existing.level, remember, active: true };
+    try { sessionStorage.setItem('casper-session', JSON.stringify(session)); } catch (err) {}
+    if (remember) st.set('casper-session', session);
+    else localStorage.removeItem('casper-session');
+
+    msgEl.textContent = '✓ MAGI VOTE UNANIMOUS // ACCESS GRANTED';
+    msgEl.className = 'auth-msg ok';
+    setTimeout(updateOperativeUI, 120);
+
+  } else {
+    // REGISTER MODE: create new operative
+    const passConf = $('#au-pass-conf').value;
+    if (pass !== passConf) {
+      msgEl.textContent = '❌ CLEARANCE CODES DO NOT MATCH';
+      msgEl.className = 'auth-msg';
+      $('#au-pass-conf').focus();
+      return;
+    }
+    if (existing) {
+      msgEl.textContent = `OPERATIVE "${user}" ALREADY REGISTERED. Switching to Sign In.`;
+      msgEl.className = 'auth-msg';
+      setAuthMode('login');
+      return;
+    }
+
+    const newOp = { user, pass, level, remember, created: Date.now() };
+    accounts.push(newOp);
+    st.set('casper-accounts', accounts);
+
+    session = { user, level, remember, active: true };
+    try { sessionStorage.setItem('casper-session', JSON.stringify(session)); } catch (err) {}
+    if (remember) st.set('casper-session', session);
+    else localStorage.removeItem('casper-session');
+
+    msgEl.textContent = '✓ NEW OPERATIVE REGISTERED // CENTRAL DOGMA INITIALIZED';
+    msgEl.className = 'auth-msg ok';
+    setTimeout(updateOperativeUI, 150);
+  }
 };
 
 $('#au-guest').onclick = () => {
-  session = { user: 'GUEST-OP', level: 'STAGE-01 // PILOT', remember: false };
+  session = { user: 'GUEST-OP', level: 'STAGE-01 // PILOT', remember: false, isGuest: true };
+  try { sessionStorage.setItem('casper-session', JSON.stringify(session)); } catch (err) {}
   updateOperativeUI();
 };
 
 $('#op-btn').onclick = () => {
   session = null;
+  try { sessionStorage.removeItem('casper-session'); } catch (err) {}
   localStorage.removeItem('casper-session');
-  $('#au-msg').textContent = 'TERMINAL LOCKED BY OPERATIVE';
+  $('#au-msg').textContent = 'TERMINAL LOCKED BY OPERATIVE // MAGI CORE SECURED';
   $('#au-msg').className = 'auth-msg';
   updateOperativeUI();
 };
@@ -2109,7 +2286,7 @@ const MK = {
   square: 'polygon(0 0,100% 0,100% 100%,0 100%)',
   notch: 'polygon(0 0,100% 0,100% 65%,65% 100%,0 100%)'
 };
-const SD = { hs: 'bracket', hf: 'serif', hc: 'upper', cr: 'cut', sc: 100, ac: '', bf: 'sans', fs: 18, hm: 'hex', bm: 'arrow', crt: true };
+const SD = { hs: 'bracket', hf: 'serif', hc: 'upper', cr: 'cut', sc: 100, ac: '', bf: 'sans', fs: 18, hm: 'hex', bm: 'arrow', crt: true, crtLvl: 25 };
 let sty = { ...SD, ...st.get('mn3-sty', {}) };
 
 function applySty() {
@@ -2117,6 +2294,10 @@ function applySty() {
   b.dataset.hs = sty.hs; b.dataset.hc = sty.hc; b.dataset.cr = sty.cr; b.dataset.font = sty.bf; b.dataset.hm = sty.hm; b.dataset.bm = sty.bm;
   b.classList.toggle('crt-on', !!sty.crt);
   $('#s-crt').checked = !!sty.crt;
+  sty.crtLvl = sty.crtLvl !== undefined ? sty.crtLvl : 25;
+  r.setProperty('--crt-opacity', sty.crtLvl / 100);
+  const lvlEl = $('#s-crt-lvl');
+  if (lvlEl) lvlEl.value = sty.crtLvl;
   r.setProperty('--hm', MK[sty.hm] || 'none');
   r.setProperty('--bm', MK[sty.bm] || 'none');
   r.setProperty('--hf', { serif: 'var(--serif)', sans: 'var(--wf)', mono: 'var(--mono)' }[sty.hf]);
@@ -2130,6 +2311,7 @@ function applySty() {
   e.oninput = () => { sty[k] = ['sc', 'fs'].includes(k) ? +e.value : e.value; applySty(); };
 });
 $('#s-crt').onchange = e => { sty.crt = e.target.checked; applySty(); };
+$('#s-crt-lvl').oninput = e => { sty.crtLvl = +e.target.value; applySty(); };
 $('#s-ac').oninput = e => { sty.ac = e.target.value; applySty(); };
 $('#s-rs').onclick = () => { sty.ac = ''; applySty(); };
 
